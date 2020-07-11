@@ -24,4 +24,5 @@ public:
     void init();
     int ad_reader();
 };
+
 #endif AD_READER_H

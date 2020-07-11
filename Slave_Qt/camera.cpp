@@ -111,7 +111,8 @@ unsigned int Camera::getImageSize(){
     return cap_image_size;
 }
 
-void Camera::CloseDevice() {
+void Camera::CloseDevice() 
+{
     stop_capturing();
     uninit_device();
     close_device();
