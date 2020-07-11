@@ -41,6 +41,7 @@ public slots:
         void fun_refresh_label();
         void fun_show_image(int index);
         void fun_exit();
+        void fun_back();
 private:
         QTimer t1;	//
         QTimer t2;
@@ -58,7 +59,7 @@ private:
         bool isToSave;
         void fun_clean_pixmap();
         void InitBox();
-
+        QWidget* the_parent;
 };
 
 

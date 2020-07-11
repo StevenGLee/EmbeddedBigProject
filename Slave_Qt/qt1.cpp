@@ -18,6 +18,11 @@
 //#include <QImage>
 #include "qt1.h"
 #include "dlinklist.c"		//����dlinklist.h������ʾundefined reference
+#include "mainwindow.h"
+#include "adc_page.h"
+extern Qt1* camera_page;
+extern ADC_page* adc_page;
+extern MainWindow* main_window;
 
 static int i=0;
 static int num = 0;
@@ -44,6 +49,7 @@ void Qt1::fun_refresh_label()
 
 Qt1::Qt1(QWidget *parent):QDialog(parent)
 {
+        the_parent = parent;
   	setupUi(this);
         this->setWindowFlags(Qt::FramelessWindowHint);
 //  rb_manual->setChecked(true);
@@ -77,6 +83,7 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
         connect(comboBox, SIGNAL(currentIndexChanged(int)),this, SLOT(fun_show_image(int)));
         //connect(pb_exit,SIGNAL(clicked()),this,SLOT(fun_exit()));
 
+        connect(pb_Back,SIGNAL(clicked()),this,SLOT(fun_back()));
   	t1.start(1000);						//������ʱ�������1s��ÿ��1s�ᷢ��һ���ź�����ʵ�����߱�
 	init_dlinklist(&head);
         width = 640;
@@ -85,6 +92,13 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
         frameBufRGB = new unsigned char[width * height * 3];
         frameBufYUV = new unsigned char[width * height * 2];
 }
+
+void Qt1::fun_back()
+{
+    main_window->show();
+    hide();
+}
+
 void Qt1::fun_refresh_pic()
 {
    if(!myCamera->GetBuffer(frameBufYUV))
