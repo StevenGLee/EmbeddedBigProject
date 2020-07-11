@@ -129,6 +129,7 @@ void MainWindow::on_pb_start_sending_clicked()
         //ui -> rb_modbus -> setEnabled(false);
         //ui -> rb_mqtt -> setEnabled(false);
         isSending = 1;
+        ui -> pb_start_sending->setText("Stop Sending");
     }
     else
     {
@@ -137,6 +138,8 @@ void MainWindow::on_pb_start_sending_clicked()
         //ui -> rb_modbus -> setEnabled(true);
         //ui -> rb_mqtt -> setEnabled(true);
         isSending = 0;
+        ui -> pb_start_sending->setText("Start Sending");
+
     }
 }
 
