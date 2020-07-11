@@ -55,8 +55,8 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
 	pb_prev->setDisabled(true);
 	pb_next->setDisabled(true);
         comboBox->setDisabled(true);
-        pb_save_img->setDisabled(true);
-    pb_del->setDisabled(true);
+        //pb_save_img->setDisabled(true);
+        pb_del->setDisabled(true);
 //=====just for you to learn how to use comboBox=======
         //InitBox();
         comboBox->clear();
@@ -72,10 +72,10 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
   	connect(&t1,SIGNAL(timeout()),this,SLOT(fun_time()));
         connect(&t2,SIGNAL(timeout()),this,SLOT(fun_pic()));
         connect(&t4, SIGNAL(timeout()), this, SLOT(fun_refresh_pic()));
-        connect(pb_save_img, SIGNAL(clicked()),this,SLOT(fun_take_photo()));
-        connect(pb_open_cam, SIGNAL(clicked()), this,SLOT(fun_cap_open()));
+        //connect(pb_save_img, SIGNAL(clicked()),this,SLOT(fun_take_photo()));
+        //connect(pb_open_cam, SIGNAL(clicked()), this,SLOT(fun_cap_open()));
         connect(comboBox, SIGNAL(currentIndexChanged(int)),this, SLOT(fun_show_image(int)));
-        connect(pb_exit,SIGNAL(clicked()),this,SLOT(fun_exit()));
+        //connect(pb_exit,SIGNAL(clicked()),this,SLOT(fun_exit()));
 
   	t1.start(1000);						//������ʱ�������1s��ÿ��1s�ᷢ��һ���ź�����ʵ�����߱�
 	init_dlinklist(&head);
@@ -121,8 +121,8 @@ void Qt1::fun_cap_open()
                 t4.start(50);//定时器如何绑定
 		isCapOpen = 1;
 		myCamera->OpenDevice();
-                pb_open_cam->setText("Close Cam");
-                pb_save_img->setDisabled(false);
+                //pb_open_cam->setText("Close Cam");
+                //pb_save_img->setDisabled(false);
 	}
 	else
 	{
@@ -131,8 +131,8 @@ void Qt1::fun_cap_open()
 		myCamera->CloseDevice();
 		fun_clean_pixmap();
                 t4.stop();
-                pb_save_img->setDisabled(true);
-                pb_open_cam->setText("Open Cam");
+                //pb_save_img->setDisabled(true);
+                //pb_open_cam->setText("Open Cam");
 
 	}
 	

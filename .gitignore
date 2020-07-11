@@ -8,3 +8,13 @@
 /Master_WPF/obj
 /Master_WPF/.vs
 Slave_Qt/photo2
+Slave_Qt/photo2
+Slave_Qt/moc_adc_page.cpp
+Slave_Qt/ui_adc_page.h
+Slave_Qt/camera_page.cpp
+Slave_Qt/camera_page.h
+Slave_Qt/camera_page.ui
+Slave_Qt/moc_camera_page.cpp
+Slave_Qt/ui_camera_page.h
+Slave_Qt/EBP_Slave
+Slave_Qt/photo2

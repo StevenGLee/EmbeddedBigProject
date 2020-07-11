@@ -3,19 +3,22 @@
 ######################################################################
 
 TEMPLATE = app
-TARGET = 
+TARGET = EBP_Slave
 DEPENDPATH += .
 INCLUDEPATH += .
 
 # Input
-HEADERS += dlinklist.h qt1.h \
+HEADERS += dlinklist.h \
     camera.h \
-    yuv2rgb.h \
-    ui_qt1.h \
-    mainwindow.h
-FORMS += qt1.ui \
-    mainwindow.ui
-SOURCES += main.cpp qt1.cpp \
+    mainwindow.h \
+    adc_page.h \
+    qt1.h
+FORMS += \
+    mainwindow.ui \
+    adc_page.ui \
+    qt1.ui
+SOURCES += main.cpp \
     camera.cpp \
-    yuv2rgb.cpp \
-    mainwindow.cpp
+    mainwindow.cpp \
+    adc_page.cpp \
+    qt1.cpp

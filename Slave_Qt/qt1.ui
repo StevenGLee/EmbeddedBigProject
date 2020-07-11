@@ -20,7 +20,7 @@
     </rect>
    </property>
    <property name="text">
-    <string/>
+    <string>Camera Monitor</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>
@@ -45,61 +45,84 @@
     <set>Qt::AlignCenter</set>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>410</x>
-     <y>150</y>
-     <width>16</width>
-     <height>21</height>
+     <x>350</x>
+     <y>0</y>
+     <width>131</width>
+     <height>271</height>
     </rect>
    </property>
-   <property name="text">
-    <string>/</string>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lb_num">
-   <property name="geometry">
-    <rect>
-     <x>390</x>
-     <y>150</y>
-     <width>21</width>
-     <height>21</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QLabel" name="lb_sum">
-   <property name="geometry">
-    <rect>
-     <x>420</x>
-     <y>150</y>
-     <width>21</width>
-     <height>20</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QWidget" name="layoutWidget">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>200</y>
-     <width>81</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
+   <layout class="QVBoxLayout" name="verticalLayout_2">
+    <property name="spacing">
+     <number>2</number>
+    </property>
     <item>
-     <widget class="QRadioButton" name="rb_manual">
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <item>
+       <widget class="QPushButton" name="pb_prev">
+        <property name="text">
+         <string>Prev</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pb_next">
+        <property name="text">
+         <string>Next</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pb_del">
       <property name="text">
-       <string>Manual</string>
+       <string>Delete</string>
       </property>
      </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pb_open">
+      <property name="text">
+       <string>Open</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <item>
+       <widget class="QLabel" name="lb_num">
+        <property name="text">
+         <string/>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>/</string>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignCenter</set>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="lb_sum">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </item>
+    <item>
+     <widget class="QComboBox" name="comboBox"/>
     </item>
     <item>
      <widget class="QRadioButton" name="rb_auto">
@@ -108,108 +131,21 @@
       </property>
      </widget>
     </item>
+    <item>
+     <widget class="QRadioButton" name="rb_manual">
+      <property name="text">
+       <string>Manual</string>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="pushButton">
+      <property name="text">
+       <string>Back</string>
+      </property>
+     </widget>
+    </item>
    </layout>
-  </widget>
-  <widget class="QComboBox" name="comboBox">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>170</y>
-     <width>111</width>
-     <height>21</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pb_open_cam">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>0</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Open cam</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pb_save_img">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>30</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Save Img</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pb_prev">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>60</y>
-     <width>51</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Prev</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pb_next">
-   <property name="geometry">
-    <rect>
-     <x>420</x>
-     <y>60</y>
-     <width>51</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Next</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pb_del">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>90</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Delete</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pb_open">
-   <property name="geometry">
-    <rect>
-     <x>360</x>
-     <y>120</y>
-     <width>111</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Open</string>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pb_exit">
-   <property name="geometry">
-    <rect>
-     <x>443</x>
-     <y>200</y>
-     <width>31</width>
-     <height>61</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Exit</string>
-   </property>
   </widget>
  </widget>
  <resources/>

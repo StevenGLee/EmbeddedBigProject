@@ -262,8 +262,8 @@ bool Camera::init_mmap(void) {
 
 bool Camera::init_device(void) {
     struct v4l2_capability cap;
-    struct v4l2_cropcap cropcap;
-    struct v4l2_crop crop;
+    //struct v4l2_cropcap cropcap;
+    //struct v4l2_crop crop;
     struct v4l2_format fmt;
     unsigned int min;
     if (-1 == xioctl(fd, VIDIOC_QUERYCAP, &cap)) {
@@ -467,5 +467,6 @@ bool Camera::GetBuffer(unsigned char *image){
         exit(EXIT_FAILURE);
     }
     read_frame(image);
+    return true;
 }
 
