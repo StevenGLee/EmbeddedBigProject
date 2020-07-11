@@ -1,6 +1,10 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-
+#include "adc_page.h"
+#include "qt1.h"
+extern Qt1* camera_page;
+extern ADC_page* adc_page;
+extern MainWindow* main_window;
 MainWindow::MainWindow(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::MainWindow)
@@ -8,16 +12,20 @@ MainWindow::MainWindow(QWidget *parent) :
     this->setWindowFlags(Qt::FramelessWindowHint);
     ui->setupUi(this);
 
-    adc_page = new ADC_page(this);
-    camera_page = new Qt1(this);
-    adc_page -> hide();
-    camera_page -> hide();
+    //adc_page = new ADC_page(this);
+    //camera_page = new Qt1(this);
+    //adc_page -> hide();
+    //camera_page -> hide();
     SendingButtons = new QButtonGroup(this);
     SendingButtons->addButton(ui->rb_UART);
     SendingButtons->addButton(ui->rb_Ethernet);
     SendingButtons->addButton(ui->rb_modbus);
     SendingButtons->addButton(ui->rb_mqtt);
     SendingButtons->setExclusive(true);
+    ui->rb_UART->setChecked(true);
+
+    ui->rb_modbus->setEnabled(false);
+    ui->rb_mqtt->setEnabled(false);
 
     CameraButtons = new QButtonGroup(this);
     CameraButtons->addButton(ui->rb_camera_stop);
@@ -25,11 +33,15 @@ MainWindow::MainWindow(QWidget *parent) :
     CameraButtons->addButton(ui->rb_camera_dynamic);
     CameraButtons->addButton(ui->rb_camera_dynamic_monitor);
     CameraButtons->setExclusive(true);
+    ui->rb_camera_stop->setChecked(true);
+
+    ui->rb_camera_dynamic_monitor->setEnabled(false);
 
     ADCButtons = new QButtonGroup(this);
     ADCButtons->addButton(ui->rb_adc_stop);
     ADCButtons->addButton(ui->rb_adc_static);
     ADCButtons->addButton(ui->rb_adc_dynamic);
+    ui->rb_adc_stop->setChecked(true);
 
     isSending = 0;
 }
@@ -117,6 +129,7 @@ void MainWindow::on_pb_start_sending_clicked()
         //ui -> rb_modbus -> setEnabled(false);
         //ui -> rb_mqtt -> setEnabled(false);
         isSending = 1;
+        ui -> pb_start_sending->setText("Stop Sending");
     }
     else
     {
@@ -125,6 +138,8 @@ void MainWindow::on_pb_start_sending_clicked()
         //ui -> rb_modbus -> setEnabled(true);
         //ui -> rb_mqtt -> setEnabled(true);
         isSending = 0;
+        ui -> pb_start_sending->setText("Start Sending");
+
     }
 }
 
@@ -137,11 +152,15 @@ void MainWindow::on_pb_exit_clicked()
 void MainWindow::on_pb_camera_page_clicked()
 {
     //“进入相机页面”以查看当前正在采集的图像，以及查看已经保存的图像
-    camera_page -> show();
+    hide();
+    camera_page->show();
+    //show();
 }
 
 void MainWindow::on_pb_adc_page_clicked()
 {
     //“进入ADC页面”以查看记录的adc数据曲线，以及保存当前现实的数据曲线
-    adc_page -> show();
+    hide();
+    adc_page->show();
+    //show();
 }

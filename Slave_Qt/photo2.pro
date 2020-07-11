@@ -12,15 +12,24 @@ HEADERS += dlinklist.h \
     camera.h \
     mainwindow.h \
     adc_page.h \
+<<<<<<< HEAD
     qt1.h \
+    ad_reader.h \
+    reader.h
+=======
+    qt1.h\
     ad_reader.h
+
+>>>>>>> 171035fb02072d8d665208498a685301f2b47027
 FORMS += \
     mainwindow.ui \
     adc_page.ui \
     qt1.ui
+
 SOURCES += main.cpp \
     camera.cpp \
     mainwindow.cpp \
     adc_page.cpp \
     qt1.cpp \
-    ad_reader.cpp
+    ad_reader.cpp \
+    reader.cpp

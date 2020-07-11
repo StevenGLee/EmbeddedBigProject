@@ -15,8 +15,12 @@ public:
     explicit ADC_page(QWidget *parent = 0);
     ~ADC_page();
 
+private slots:
+    void on_pushButton_2_clicked();
+
 private:
     Ui::ADC_page *ui;
+    QWidget* the_parent;
 };
 
 #endif // ADC_PAGE_H

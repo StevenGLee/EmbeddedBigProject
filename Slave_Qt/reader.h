@@ -11,3 +11,4 @@ QTimer t5;
 void ChangeSampleTime(int milliseconds);
 
 };
+#endif READER_H

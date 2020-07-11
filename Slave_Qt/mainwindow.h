@@ -58,8 +58,8 @@ private:
     QButtonGroup* ADCButtons;
     Ui::MainWindow *ui;
     int isSending;
-    Qt1 *camera_page;
-    ADC_page *adc_page;
+    //Qt1 *camera_page;
+    //ADC_page *adc_page;
 
 };
 

@@ -20,9 +20,8 @@ private:
     int fd_adc;
     char *adc = "/dev/adc";
     char buffer[512];
-    memset(buffer, 0, sizeof(buffer));
 public:
     void init();
     int ad_reader();
 };
-
+#endif AD_READER_H
