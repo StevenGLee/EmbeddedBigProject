@@ -1,6 +1,10 @@
 *.o
 /Slave_Qt/photo2
 /Slave_Qt/moc_qt1.cpp
+/Slave_Qt/moc_mainwindow.cpp
+/Slave_Qt/ui_qt1.h
+/Slave_Qt/ui_mainwindow.h
 /Master_WPF/bin
 /Master_WPF/obj
 /Master_WPF/.vs
+Slave_Qt/photo2
