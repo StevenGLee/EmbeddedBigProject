@@ -1,3 +1,5 @@
 *.o
 /Slave_Qt/photo2
 /Slave_Qt/moc_qt1.cpp
+/Master_WPF/bin
+/Master_WPF/obj
