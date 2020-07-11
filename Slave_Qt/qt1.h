@@ -46,6 +46,7 @@ private:
         QTimer t2;
         QTimer t3;
         QTimer t4;
+       
 	int len;
         bool isCapOpen;
         Camera* myCamera;
@@ -57,6 +58,7 @@ private:
         bool isToSave;
         void fun_clean_pixmap();
         void InitBox();
+
 };
 
 

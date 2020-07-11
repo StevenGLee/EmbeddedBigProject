@@ -107,8 +107,6 @@ bool Camera::process_image(unsigned char *imageSrc,unsigned char * imageDst)
 }
 
 
-
-
 unsigned int Camera::getImageSize(){
     return cap_image_size;
 }
