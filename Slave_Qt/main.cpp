@@ -14,7 +14,6 @@ int main(int argc, char** argv)
 	app.setFont(QFont("wenquanyi", 12));
 	//app.setFont(QFont("simsun", 10));
 
-
     //MD.show();
         camera_page = new Qt1();
         adc_page = new ADC_page();

@@ -2,6 +2,12 @@
 #include "ui_mainwindow.h"
 #include "adc_page.h"
 #include "qt1.h"
+#include"camera.h"
+#include"ad_reader.h"
+#include <QDebug>
+#include <QFile>
+
+
 extern Qt1* camera_page;
 extern ADC_page* adc_page;
 extern MainWindow* main_window;
@@ -164,3 +170,199 @@ void MainWindow::on_pb_adc_page_clicked()
     adc_page->show();
     //show();
 }
+
+void MainWindow::TcpServer()
+{
+    tcpserver = new QTcpServer();
+    connect(tcpserver, SIGNAL(newConnection()), this, SLOT(newConnectionSlot()));
+}
+int MainWindow::run()
+{
+    if (tcpserver->listen(QHostAddress::Any, 3230))
+       {
+           qDebug()<<"[TcpServer]-------------------------------------------------listen sucess"<<endl;
+       }
+       else
+       {
+           qDebug()<<"[TcpServer]-------------------------------------------------listen faile"<<endl;
+       }
+
+}
+
+void MainWindow::newConnectionSlot()
+{
+     qDebug()<<"[TcpServer]-------------------------------------------------new Connection !!!"<<endl;
+     tcpsocket = tcpserver->nextPendingConnection();
+     qDebug()<<"From ---> "<<tcpsocket->peerAddress()<<":"<<tcpsocket->peerPort()<<endl;
+
+
+     Qstring str=buffer_send;
+     tcpsocket->write(str.toUtf8().data());
+
+     //接收到新数据的信号以及连接断开的信号
+     connect(tcpsocket, SIGNAL(readyRead()),this, SLOT(dataReceived()));
+     connect(tcpsocket, SIGNAL(disconnected()), tcpsocket, SLOT(deleteLater()));
+}
+
+char MainWindow::ChangeSampleTime(int milliseconds)
+{
+
+    ad_reader AD;
+    AD.init();
+    t5.start(milliseconds);
+    ad_zhi=AD.ad();
+
+    //QString filepath = "./images/"; //"/mnt/usb/images/";
+    //QDateTime d=QDateTime::currentDateTime();
+    //filepath += d.toString("MM-dd_hh-mm-ss");
+    //filepath += ".jpg";
+    //m_image->save(filepath, "JPG", -1);
+
+    Qt1 Cam;
+    Cam.fun_take_photo();
+    RGB_zhi=Cam.frameBufRGB;
+    sprintf(buffer_send,"%d\n %hhu\n",ad_zhi,RGB_zhi);
+    return buffer_send;
+
+}
+
+void MainWindow::dataReceived()
+{
+    QByteArray buffer;
+    //读取缓冲区数据
+    buffer = tcpsocket->readAll();
+    if(!buffer.isEmpty())
+    {
+        QString command =  QString::fromLocal8Bit(buffer);
+        qDebug()<<"[command]:" << command <<endl;
+    }
+    ui->textEditRead->append(buffer);
+
+}
+
+
+void MainWindow::SendM()
+{
+    printf("Choose send way:\n1. UART (default)\n2. socket\n");
+    scanf("%d", &func);
+    switch(func)
+    {
+    case 1:
+        char buffer_send[MAX_SIZE];
+
+
+        uart3 = "/dev/ttySAC3";
+
+        fd = open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
+        if (fd == -1)
+        {
+                printf("open %s is failed", dest);
+                return 0;
+        }
+        set_opt(fd, 115200, 8, 'N', 1);
+        while(1){
+            printf("send:%s\n", buffer_send);
+            write(fd, buffer_send, strlen(buffer_send));
+        }
+
+
+      case 2:
+        TcpServer();
+        run();
+        newConnectionSlot();
+        while(1){
+            dataReceived();
+        }
+    }
+
+}
+
+int MainWindow::set_opt(int fd_uart,int nSpeed, int nBits, char nEvent, int nStop)
+{
+        struct termios newtio,oldtio;
+        //tcgetarr读取当前串口的参数值，fd是open返回的句柄
+        if  ( tcgetattr( fd_uart,&oldtio)  !=  0) {
+                perror("SetupSerial 1");
+                return -1;
+        }
+        bzero( &newtio, sizeof( newtio ) );
+
+        //设置字符大小
+        newtio.c_cflag  |=  CLOCAL | CREAD;
+        newtio.c_cflag &= ~CSIZE;
+
+        switch( nBits )
+        {
+                //设置停止位
+                case 7:
+                        newtio.c_cflag |= CS7;
+                        break;
+                case 8:
+                        newtio.c_cflag |= CS8;
+                        break;
+        }
+        //设置奇偶校验位
+        switch( nEvent )
+        {
+        case 'O':
+                newtio.c_cflag |= PARENB;
+                newtio.c_cflag |= PARODD;
+                newtio.c_iflag |= (INPCK | ISTRIP);
+                break;
+        case 'E':
+                newtio.c_iflag |= (INPCK | ISTRIP);
+                newtio.c_cflag |= PARENB;
+                newtio.c_cflag &= ~PARODD;
+                break;
+        case 'N':
+                newtio.c_cflag &= ~PARENB;
+                break;
+        }
+        //设置波特率
+        switch( nSpeed )
+        {
+                case 2400:
+                        cfsetispeed(&newtio, B2400);
+                        cfsetospeed(&newtio, B2400);
+                        break;
+                case 4800:
+                        cfsetispeed(&newtio, B4800);
+                        cfsetospeed(&newtio, B4800);
+                        break;
+                case 9600:
+                        cfsetispeed(&newtio, B9600);
+                        cfsetospeed(&newtio, B9600);
+                        break;
+                case 115200:
+                        cfsetispeed(&newtio, B115200);
+                        cfsetospeed(&newtio, B115200);
+                        break;
+                case 460800:
+                        cfsetispeed(&newtio, B460800);
+                        cfsetospeed(&newtio, B460800);
+                        break;
+                default:
+                        cfsetispeed(&newtio, B9600);
+                        cfsetospeed(&newtio, B9600);
+                        break;
+        }
+        if( nStop == 1 )
+                newtio.c_cflag &=  ~CSTOPB;
+        else if ( nStop == 2 )
+                newtio.c_cflag |=  CSTOPB;
+                newtio.c_cc[VTIME]  = 0;
+                newtio.c_cc[VMIN] = 0;
+                tcflush(fd_uart,TCIFLUSH);
+        if((tcsetattr(fd_uart,TCSANOW,&newtio))!=0)
+        {
+                perror("com set error");
+                return -1;
+        }
+
+        //	printf("set done!\n\r");
+        return 0;
+}
+
+
+
+

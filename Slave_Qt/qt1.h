@@ -42,7 +42,7 @@ public slots:
         void fun_show_image(int index);
         void fun_exit();
         void fun_back();
-private:
+public:
         QTimer t1;	//
         QTimer t2;
         QTimer t3;

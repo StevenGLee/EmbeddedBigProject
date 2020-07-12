@@ -13,16 +13,19 @@
 #include <termios.h>
 #include <errno.h>
 #include <stdlib.h>
+#include <stdlib.h>
+#include <stdint.h>
+#include <math.h>
+
 
 class ad_reader
 {
-private:
-    int fd_adc;
-    char *adc = "/dev/adc";
-    char buffer[512];
 public:
+    int fd_adc;
+    char *adc;
+    char buffer[512];
+    int r;
     void init();
-    int ad_reader();
+    int ad();
 };
-
 #endif AD_READER_H
