@@ -1,26 +1,3 @@
-*.o
-/Slave_Qt/photo2
-/Slave_Qt/moc_qt1.cpp
-/Slave_Qt/moc_mainwindow.cpp
-/Slave_Qt/ui_qt1.h
-/Slave_Qt/ui_mainwindow.h
-/Master_WPF/bin
-/Master_WPF/obj
-/Master_WPF/.vs
-Slave_Qt/photo2
-Slave_Qt/photo2
-Slave_Qt/moc_adc_page.cpp
-Slave_Qt/ui_adc_page.h
-Slave_Qt/camera_page.cpp
-Slave_Qt/camera_page.h
-Slave_Qt/camera_page.ui
-Slave_Qt/moc_camera_page.cpp
-Slave_Qt/ui_camera_page.h
-Slave_Qt/EBP_Slave
-Slave_Qt/photo2
-Master_Qt/build-Master_Qt-Desktop_Qt_5_12_7_MinGW_64_bit-Debug/debug/moc_predefs.h
-Master_Qt/build-Master_Qt-Desktop_Qt_5_12_7_MinGW_64_bit-Debug/ui_mainwindow.h
-
 # This file is used to ignore files which are generated
 # ----------------------------------------------------------------------------
 
