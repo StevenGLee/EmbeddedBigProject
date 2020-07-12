@@ -94,7 +94,7 @@ void MainWindow::on_rb_camera_static_clicked()
     camera_page->isCapOpen=0;
     camera_page->fun_cap_open(1000);
 
-    main_window->SendM();
+
 
     //相机以固定速率采集和发送
 }
@@ -240,7 +240,7 @@ void MainWindow::SendM()
 
 
     RGB_zhi=camera_page->frameBufRGB;
-    sprintf(buffer_send,"%d\n %hhu\n",ad_zhi,RGB_zhi);
+    sprintf(buffer_send,"%d\n %c\n",ad_zhi,RGB_zhi);
 
 
 

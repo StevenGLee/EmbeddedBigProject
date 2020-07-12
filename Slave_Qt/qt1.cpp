@@ -138,8 +138,9 @@ void Qt1::fun_cap_open(int mseconds)
 		myCamera->OpenDevice();
                 //pb_open_cam->setText("Close Cam");
                 //pb_save_img->setDisabled(false);
-                myCamera->GetBuffer(camera_page->frameBufYUV);
-                myCamera->process_image(camera_page->frameBufYUV, camera_page->frameBufRGB);
+                myCamera->GetBuffer(frameBufYUV);
+                myCamera->process_image(frameBufYUV, frameBufRGB);
+                main_window->SendM();
 
 	}
 	else
