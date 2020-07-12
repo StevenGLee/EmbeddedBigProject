@@ -31,7 +31,6 @@ public:
             //(1)串口3和文件的地址，注意ttySAC3是con2，靠近耳机接口的串口
     char *uart3;
     void SendRGB(unsigned char*);
-    void SendADC();
 
     int set_opt(int,int,int,char,int);
 
@@ -76,7 +75,7 @@ private slots:
 
     void newConnectionSlot();
     void dataReceived();
-
+    void SendADC();
 
 private:
     QButtonGroup* SendingButtons;

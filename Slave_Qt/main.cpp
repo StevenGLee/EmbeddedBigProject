@@ -15,9 +15,9 @@ int main(int argc, char** argv)
 	//app.setFont(QFont("simsun", 10));
 
     //MD.show();
+        main_window = new MainWindow();
         camera_page = new Qt1();
         adc_page = new ADC_page();
-        main_window = new MainWindow();
         main_window->show();
 
 	// MD.setDefaultWeight();

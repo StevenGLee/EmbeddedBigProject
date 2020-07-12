@@ -56,6 +56,8 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->rb_adc_stop->setChecked(true);
 
     isSending = 0;
+    uart3 = "/dev/ttySAC3";
+
 }
 
 MainWindow::~MainWindow()
@@ -68,30 +70,11 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_rb_UART_clicked()
 {
-    if(isSending==1)
-    {
-        uart3 = "/dev/ttySAC3";
-        fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
-        if (fd == -1)
-        {
-            printf("open %s is failed", uart3);
-
-        }
-        set_opt(fd, 115200, 8, 'N', 1);
-
-        printf("send:%s\n", buffer_send);
-
         //UART通信方式
-    }
-
 }
 
 void MainWindow::on_rb_Ethernet_clicked()
 {
-    TcpServer();
-    run();
-    newConnectionSlot();
-    dataReceived();
 
     //Ethernet通信方式
 }
@@ -174,6 +157,25 @@ void MainWindow::on_pb_start_sending_clicked()
         //ui -> rb_mqtt -> setEnabled(false);
         isSending = 1;
         ui -> pb_start_sending->setText("Stop Sending");
+        if(ui->rb_UART->isChecked())
+        {
+            fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
+            if (fd == -1)
+            {
+                printf("open %s is failed", uart3);
+
+            }
+            set_opt(fd, 115200, 8, 'N', 1);
+
+        }
+        else if(ui->rb_Ethernet->isChecked())
+        {
+            //这个地方一看就知道你写的不对。但是你自己改。
+            TcpServer();
+            run();
+            newConnectionSlot();
+            dataReceived();
+        }
 
     }
     else
@@ -184,6 +186,17 @@ void MainWindow::on_pb_start_sending_clicked()
         //ui -> rb_mqtt -> setEnabled(true);
         isSending = 0;
         ui -> pb_start_sending->setText("Start Sending");
+        if(ui->rb_UART->isChecked())
+        {
+            ::close(fd);
+            //这里直接关闭了串口。注意完善逻辑，使关闭串口后，所有从串口走的数据发送都不走了
+            //比如在发送的时候，判断ui->rb_UART->isChecked()为真，且isSending==1时才进行send或者write
+        }
+        else if(ui->rb_Ethernet->isChecked())
+        {
+            //点击“停止发送”，关闭连接，并关闭server
+            //关闭连接前先发送“exit”这个字符串，通知上位机关闭连接
+        }
 
     }
 }

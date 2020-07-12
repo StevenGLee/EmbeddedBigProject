@@ -94,3 +94,5 @@ Thumbs.db
 *.dll
 *.exe
 
+Master_Qt/build-Master_Qt-Desktop_Qt_5_14_1_MinGW_64_bit-Debug/moc_predefs.h
+Master_Qt/build-Master_Qt-Desktop_Qt_5_14_1_MinGW_64_bit-Debug/.qmake.stash
