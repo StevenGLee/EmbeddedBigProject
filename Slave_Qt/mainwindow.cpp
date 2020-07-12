@@ -90,6 +90,13 @@ void MainWindow::on_rb_camera_stop_clicked()
 
 void MainWindow::on_rb_camera_static_clicked()
 {
+
+    camera_page->myCamera->OpenDevice();
+    camera_page->myCamera->GetBuffer(camera_page->frameBufYUV);
+    camera_page->myCamera->process_image(camera_page->frameBufYUV, camera_page->frameBufRGB);
+    main_window->ChangeSampleTime(1000);
+    main_window->SendM();
+
     //相机以固定速率采集和发送
 }
 
