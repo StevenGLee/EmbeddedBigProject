@@ -56,6 +56,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ui->rb_adc_stop->setChecked(true);
 
     isSending = 0;
+    isServer=0;
     uart3 = "/dev/ttySAC3";
 
 }
@@ -75,6 +76,7 @@ void MainWindow::on_rb_UART_clicked()
 
 void MainWindow::on_rb_Ethernet_clicked()
 {
+    isServer==1;
 
     //Ethernet通信方式
 }
@@ -184,10 +186,12 @@ void MainWindow::on_pb_start_sending_clicked()
         else if(ui->rb_Ethernet->isChecked())
         {
             //这个地方一看就知道你写的不对。但是你自己改。
-            TcpServer();
-            run();
-            newConnectionSlot();
-            dataReceived();
+            if(isServer==1)
+            {
+                TcpServer();
+                run();
+            }
+
         }
 
     }
@@ -207,6 +211,9 @@ void MainWindow::on_pb_start_sending_clicked()
         }
         else if(ui->rb_Ethernet->isChecked())
         {
+            isServer=0;
+            tcpsocket->write("exit");
+            tcpserver->close();
             //点击“停止发送”，关闭连接，并关闭server
             //关闭连接前先发送“exit”这个字符串，通知上位机关闭连接
         }
@@ -241,7 +248,7 @@ void MainWindow::TcpServer()
     tcpserver = new QTcpServer();
     connect(tcpserver, SIGNAL(newConnection()), this, SLOT(newConnectionSlot()));
 }
-int MainWindow::run()
+void MainWindow::run()
 {
     if (tcpserver->listen(QHostAddress::Any, 3230))
        {
@@ -261,8 +268,8 @@ void MainWindow::newConnectionSlot()
      qDebug()<<"From ---> "<<tcpsocket->peerAddress()<<":"<<tcpsocket->peerPort()<<endl;
 
 
-     QString str=buffer_send;
-     tcpsocket->write(str.toUtf8().data());
+     //QString str=buffer_send;
+     tcpsocket->write(buffer_send,strlen(buffer_send));
 
      //接收到新数据的信号以及连接断开的信号
      connect(tcpsocket, SIGNAL(readyRead()),this, SLOT(dataReceived()));

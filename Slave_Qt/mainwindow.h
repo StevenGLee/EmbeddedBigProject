@@ -23,7 +23,7 @@ class MainWindow : public QDialog
 public:
     explicit MainWindow(QWidget *parent = 0);
     void TcpServer();
-    int run();
+    void run();
     QTimer t5;
     int milliseconds;
     char buffer_send[MAXSIZE];
@@ -33,6 +33,8 @@ public:
     void SendRGB(unsigned char*);
 
     int set_opt(int,int,int,char,int);
+
+
 
     ad_reader AD;
 
@@ -85,6 +87,7 @@ private:
     QButtonGroup* ADCButtons;
     Ui::MainWindow *ui;
     int isSending;
+    int isServer;
     QTcpServer *tcpserver;
     QTcpSocket *tcpsocket;
 
