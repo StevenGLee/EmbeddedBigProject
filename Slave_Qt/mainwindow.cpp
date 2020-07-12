@@ -133,7 +133,7 @@ void MainWindow::on_rb_adc_static_clicked()
 {
     AD.open();
     camera_page->t5.start(1000);
-    ad=AD.ad();
+
     main_window->SendADC();
     //ADC以固定速率采集和发送
 }
@@ -320,6 +320,7 @@ void MainWindow::SendRGB(unsigned char *frameBufRGB)
 
 void MainWindow::SendADC()
 {
+    ad=AD.ad();
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=1;
     sprintf(buffer_send+1, "%d", ad);
@@ -333,6 +334,9 @@ void MainWindow::SendADC()
         tcpsocket->write(buffer_send,strlen(buffer_send));
 
     }
+
+    adc_page->update_data(AD.r);
+
     //char *buf;
     //sprintf(buf,"%d",AD.ad());
     //memcpy(buffer_send,buf,(strlen(buf) + 1));
