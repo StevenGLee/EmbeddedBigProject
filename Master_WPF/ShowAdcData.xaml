@@ -1,0 +1,12 @@
+﻿<Window x:Class="Master_WPF.ShowAdcData"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Master_WPF"
+        mc:Ignorable="d"
+        Title="ShowAdcData" Height="300" Width="400">
+    <Grid>
+        <local:HotspotStrip x:Name="AdcGraph" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
+    </Grid>
+</Window>
