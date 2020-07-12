@@ -25,7 +25,8 @@ public:
     char *adc;
     char buffer[512];
     int r;
-    void init();
+    void open();
+    void close();
     int ad();
 };
 #endif AD_READER_H

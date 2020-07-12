@@ -1,15 +1,19 @@
 #include"ad_reader.h"
 
 
-void ad_reader::init()
+void ad_reader::open()
 {
     adc= "/dev/adc";
-    if ((fd_adc = open(adc, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
+    if ((fd_adc = ::open(adc, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
 	{
 		printf("open ADC error\n");
 
 	}
 
+}
+void ad_reader::close()
+{
+    ::close(fd_adc);
 }
 
 int ad_reader::ad()
