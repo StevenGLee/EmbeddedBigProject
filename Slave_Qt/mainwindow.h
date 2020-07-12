@@ -88,6 +88,7 @@ private:
     Ui::MainWindow *ui;
     int isSending;
     int isServer;
+    int isuart;
     QTcpServer *tcpserver;
     QTcpSocket *tcpsocket;
 

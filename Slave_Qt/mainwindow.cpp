@@ -57,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) :
 
     isSending = 0;
     isServer=0;
+    isuart=0;
     uart3 = "/dev/ttySAC3";
 
 }
@@ -71,6 +72,7 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_rb_UART_clicked()
 {
+    isuart=1;
         //UART通信方式
 }
 
@@ -174,19 +176,21 @@ void MainWindow::on_pb_start_sending_clicked()
         ui -> pb_start_sending->setText("Stop Sending");
         if(ui->rb_UART->isChecked())
         {
-            fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
-            if (fd == -1)
+            if(isServer==0&&isuart==1)
             {
-                printf("open %s is failed", uart3);
+                fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
+                if (fd == -1)
+                {
+                    printf("open %s is failed", uart3);
 
+                }
+                set_opt(fd, 115200, 8, 'N', 1);
             }
-            set_opt(fd, 115200, 8, 'N', 1);
-
         }
         else if(ui->rb_Ethernet->isChecked())
         {
             //这个地方一看就知道你写的不对。但是你自己改。
-            if(isServer==1)
+            if(isServer==1&&isuart==0)
             {
                 TcpServer();
                 run();
@@ -206,6 +210,7 @@ void MainWindow::on_pb_start_sending_clicked()
         if(ui->rb_UART->isChecked())
         {
             ::close(fd);
+            isuart=0;
             //这里直接关闭了串口。注意完善逻辑，使关闭串口后，所有从串口走的数据发送都不走了
             //比如在发送的时候，判断ui->rb_UART->isChecked()为真，且isSending==1时才进行send或者write
         }
@@ -269,7 +274,7 @@ void MainWindow::newConnectionSlot()
 
 
      //QString str=buffer_send;
-     tcpsocket->write(buffer_send,strlen(buffer_send));
+
 
      //接收到新数据的信号以及连接断开的信号
      connect(tcpsocket, SIGNAL(readyRead()),this, SLOT(dataReceived()));
@@ -300,7 +305,12 @@ void MainWindow::SendRGB(unsigned char *frameBufRGB)
     //const char* RGB = (const char*)(char*)frameBufRGB;
     //sprintf(buffer_send+1, "%s", *frameBufRGB);
     memcpy(buffer_send+1,frameBufRGB,640*480*3);
-    write(fd, buffer_send, 640*480*3+1);
+    //write(fd, buffer_send, 640*480*3+1);
+    if(isServer==1&&isuart==0)
+    {
+        tcpsocket->write(buffer_send,strlen(buffer_send));
+
+    }
 
 }
 
@@ -309,8 +319,16 @@ void MainWindow::SendADC(int ad)
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=1;
     sprintf(buffer_send+1, "%d", ad);
-    write(fd, buffer_send, strlen(buffer_send));
+    if(isServer==0&&isuart==1)
+    {
+        write(fd, buffer_send, strlen(buffer_send));
 
+    }
+    if(isServer==1&&isuart==0)
+    {
+        tcpsocket->write(buffer_send,strlen(buffer_send));
+
+    }
     //char *buf;
     //sprintf(buf,"%d",AD.ad());
     //memcpy(buffer_send,buf,(strlen(buf) + 1));
