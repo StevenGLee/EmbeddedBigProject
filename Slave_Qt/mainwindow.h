@@ -33,6 +33,7 @@ public:
     void SendRGB(unsigned char*);
 
     int set_opt(int,int,int,char,int);
+    int ad;
 
 
 
@@ -79,7 +80,7 @@ private slots:
 
     void newConnectionSlot();
     void dataReceived();
-    void SendADC(int);
+    void SendADC();
 
 private:
     QButtonGroup* SendingButtons;

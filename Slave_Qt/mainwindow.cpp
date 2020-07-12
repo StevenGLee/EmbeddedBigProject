@@ -133,7 +133,8 @@ void MainWindow::on_rb_adc_static_clicked()
 {
     AD.open();
     camera_page->t5.start(1000);
-    main_window->SendADC(AD.ad());
+    ad=AD.ad();
+    main_window->SendADC();
     //ADC以固定速率采集和发送
 }
 
@@ -156,9 +157,12 @@ void MainWindow::on_sb_camera_freq_valueChanged(int camera_freq)
 
 void MainWindow::on_sb_adc_freq_valueChanged(int adc_freq)
 {
+
+    AD.open();
+    ad=AD.ad();
     camera_page->t5.stop();
     camera_page->t5.start(adc_freq);
-    main_window->SendADC(AD.ad());
+    main_window->SendADC();
 
     //adc动态采集速率改变响应函数
 }
@@ -314,7 +318,7 @@ void MainWindow::SendRGB(unsigned char *frameBufRGB)
 
 }
 
-void MainWindow::SendADC(int ad)
+void MainWindow::SendADC()
 {
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=1;
