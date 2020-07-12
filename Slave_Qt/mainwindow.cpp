@@ -68,11 +68,31 @@ MainWindow::~MainWindow()
 
 void MainWindow::on_rb_UART_clicked()
 {
-    //UART通信方式
+    if(isSending==1)
+    {
+        uart3 = "/dev/ttySAC3";
+        fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
+        if (fd == -1)
+        {
+            printf("open %s is failed", uart3);
+
+        }
+        set_opt(fd, 115200, 8, 'N', 1);
+
+        printf("send:%s\n", buffer_send);
+
+        //UART通信方式
+    }
+
 }
 
 void MainWindow::on_rb_Ethernet_clicked()
 {
+    TcpServer();
+    run();
+    newConnectionSlot();
+    dataReceived();
+
     //Ethernet通信方式
 }
 
@@ -98,7 +118,6 @@ void MainWindow::on_rb_camera_static_clicked()
     camera_page->t4.stop();
     camera_page->isCapOpen=0;
     camera_page->fun_cap_open(1000);
-
     //相机以固定速率采集和发送
 }
 
@@ -124,12 +143,13 @@ void MainWindow::on_rb_adc_static_clicked()
 
     camera_page->t5.start(1000);
     main_window->SendADC();
-    main_window->SendM();
+
     //ADC以固定速率采集和发送
 }
 
 void MainWindow::on_rb_adc_dynamic_clicked()
 {
+
     //ADC以动态速率采集和发送，速率在sb_adc_freq中设置
 }
 
@@ -154,6 +174,7 @@ void MainWindow::on_pb_start_sending_clicked()
         //ui -> rb_mqtt -> setEnabled(false);
         isSending = 1;
         ui -> pb_start_sending->setText("Stop Sending");
+
     }
     else
     {
@@ -244,8 +265,10 @@ void MainWindow::SendRGB(unsigned char *frameBufRGB)
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=2;
     //const char* RGB = (const char*)(char*)frameBufRGB;
-    sprintf(buffer_send+1, "%u", *frameBufRGB);
+    sprintf(buffer_send+1, "%s", *frameBufRGB);
     //memcpy(buffer_send,*RGB,(strlen(RGB) + 1));
+    write(fd, buffer_send, strlen(buffer_send));
+
 }
 
 void MainWindow::SendADC()
@@ -255,45 +278,14 @@ void MainWindow::SendADC()
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=1;
     sprintf(buffer_send+1, "%d", AD.ad());
+    write(fd, buffer_send, strlen(buffer_send));
 
     //char *buf;
     //sprintf(buf,"%d",AD.ad());
     //memcpy(buffer_send,buf,(strlen(buf) + 1));
 }
 
-void MainWindow::SendM()
-{
-    int func;
 
-    printf("Choose send way:\n1. UART (default)\n2. socket\n");
-    scanf("%d", &func);
-    switch(func)
-    {
-    case 1:
-        uart3 = "/dev/ttySAC3";
-        fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
-        if (fd == -1)
-        {
-                printf("open %s is failed", uart3);
-
-        }
-        set_opt(fd, 115200, 8, 'N', 1);
-        while(1){
-            printf("send:%s\n", buffer_send);
-            write(fd, buffer_send, strlen(buffer_send));
-        }
-
-
-      case 2:
-        TcpServer();
-        run();
-        newConnectionSlot();
-        while(1){
-            dataReceived();
-        }
-    }
-
-}
 
 int MainWindow::set_opt(int fd_uart,int nSpeed, int nBits, char nEvent, int nStop)
 {

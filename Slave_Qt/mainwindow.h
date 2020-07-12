@@ -33,8 +33,6 @@ public:
     void SendRGB(unsigned char*);
     void SendADC();
 
-
-    void SendM();
     int set_opt(int,int,int,char,int);
 
 

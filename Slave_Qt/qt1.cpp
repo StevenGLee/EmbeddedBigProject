@@ -82,6 +82,8 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
         //connect(pb_open_cam, SIGNAL(clicked()), this,SLOT(fun_cap_open()));
         connect(comboBox, SIGNAL(currentIndexChanged(int)),this, SLOT(fun_show_image(int)));
         //connect(pb_exit,SIGNAL(clicked()),this,SLOT(fun_exit()));
+        connect(&t5, SIGNAL(timeout()), this, SLOT(MainWindow::SendADC()));
+
 
         connect(pb_Back,SIGNAL(clicked()),this,SLOT(fun_back()));
   	t1.start(1000);						//������ʱ�������1s��ÿ��1s�ᷢ��һ���ź�����ʵ�����߱�
@@ -141,7 +143,7 @@ void Qt1::fun_cap_open(int mseconds)
                 myCamera->GetBuffer(frameBufYUV);
                 myCamera->process_image(frameBufYUV, frameBufRGB);
                 main_window->SendRGB(frameBufRGB);
-                main_window->SendM();
+
 
 	}
 	else
