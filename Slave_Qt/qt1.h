@@ -47,6 +47,7 @@ public:
         QTimer t2;
         QTimer t3;
         QTimer t4;
+        QTimer t5;
        
 	int len;
         bool isCapOpen;

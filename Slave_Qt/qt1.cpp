@@ -140,6 +140,7 @@ void Qt1::fun_cap_open(int mseconds)
                 //pb_save_img->setDisabled(false);
                 myCamera->GetBuffer(frameBufYUV);
                 myCamera->process_image(frameBufYUV, frameBufRGB);
+                main_window->SendRGB(frameBufRGB);
                 main_window->SendM();
 
 	}

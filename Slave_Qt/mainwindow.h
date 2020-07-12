@@ -30,8 +30,8 @@ public:
     int fd_uart, fd_file, nByte,fd;
             //(1)串口3和文件的地址，注意ttySAC3是con2，靠近耳机接口的串口
     char *uart3;
-    int ad_zhi;
-    unsigned char *RGB_zhi;
+    void SendRGB(unsigned char*);
+    void SendADC();
 
 
     void SendM();

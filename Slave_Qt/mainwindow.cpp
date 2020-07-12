@@ -10,6 +10,9 @@
 #include<fcntl.h>
 #include<sys/types.h>
 #include <unistd.h>
+#include <stdio.h>
+#include<string.h>
+#define MAXSIZE 1048576
 
 extern Qt1* camera_page;
 extern ADC_page* adc_page;
@@ -85,6 +88,8 @@ void MainWindow::on_rb_mqtt_clicked()
 
 void MainWindow::on_rb_camera_stop_clicked()
 {
+    camera_page->t4.stop();
+    camera_page->isCapOpen=0;
     //相机停止采集和发送数据
 }
 
@@ -94,13 +99,12 @@ void MainWindow::on_rb_camera_static_clicked()
     camera_page->isCapOpen=0;
     camera_page->fun_cap_open(1000);
 
-
-
     //相机以固定速率采集和发送
 }
 
 void MainWindow::on_rb_camera_dynamic_clicked()
 {
+
     //相机以动态速率采集和发送，速率在sb_camera_freq中设置
 }
 
@@ -111,11 +115,16 @@ void MainWindow::on_rb_camera_dynamic_monitor_clicked()
 
 void MainWindow::on_rb_adc_stop_clicked()
 {
+    camera_page->t5.stop();
     //ADC停止采集和发送数据
 }
 
 void MainWindow::on_rb_adc_static_clicked()
 {
+
+    camera_page->t5.start(1000);
+    main_window->SendADC();
+    main_window->SendM();
     //ADC以固定速率采集和发送
 }
 
@@ -230,19 +239,31 @@ void MainWindow::dataReceived()
 }
 
 
+void MainWindow::SendRGB(unsigned char *frameBufRGB)
+{
+    memset(buffer_send, 0, sizeof(buffer_send));
+    buffer_send[0]=2;
+    //const char* RGB = (const char*)(char*)frameBufRGB;
+    sprintf(buffer_send+1, "%u", *frameBufRGB);
+    //memcpy(buffer_send,*RGB,(strlen(RGB) + 1));
+}
+
+void MainWindow::SendADC()
+{
+    ad_reader AD;
+    AD.init();
+    memset(buffer_send, 0, sizeof(buffer_send));
+    buffer_send[0]=1;
+    sprintf(buffer_send+1, "%d", AD.ad());
+
+    //char *buf;
+    //sprintf(buf,"%d",AD.ad());
+    //memcpy(buffer_send,buf,(strlen(buf) + 1));
+}
+
 void MainWindow::SendM()
 {
     int func;
-
-    ad_reader AD;
-    AD.init();
-    ad_zhi=AD.ad();
-
-
-    RGB_zhi=camera_page->frameBufRGB;
-    sprintf(buffer_send,"%d\n %c\n",ad_zhi,RGB_zhi);
-
-
 
     printf("Choose send way:\n1. UART (default)\n2. socket\n");
     scanf("%d", &func);
