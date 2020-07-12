@@ -71,7 +71,7 @@ namespace Master_WPF
                         return;
                     }
                     client = new TcpClient();
-                    client.Connect(IPAddress.Parse(IPTextBox.Text), 10492);
+                    client.Connect(IPAddress.Parse(IPTextBox.Text), 3230);
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 使用Ethernet连接下位机。\n";
                     client.Client.BeginReceive(buffer, 0, 1024 * 1024, SocketFlags.None, OnRecieve, null);
                     lowerProtocol = LowerProtocol.Ethernet;
