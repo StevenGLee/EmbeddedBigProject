@@ -91,22 +91,23 @@ void MainWindow::on_rb_mqtt_clicked()
 
 void MainWindow::on_rb_camera_stop_clicked()
 {
-    camera_page->t4.stop();
-    camera_page->isCapOpen=0;
+
+    camera_page->isCapOpen=1;
+    camera_page->fun_cap_open();
     //相机停止采集和发送数据
 }
 
 void MainWindow::on_rb_camera_static_clicked()
 {
     camera_page->t4.stop();
+    camera_page->t4.start(1000);
     camera_page->isCapOpen=0;
-    camera_page->fun_cap_open(1000);
+    camera_page->fun_cap_open();
     //相机以固定速率采集和发送
 }
 
 void MainWindow::on_rb_camera_dynamic_clicked()
 {
-
     //相机以动态速率采集和发送，速率在sb_camera_freq中设置
 }
 
@@ -118,15 +119,17 @@ void MainWindow::on_rb_camera_dynamic_monitor_clicked()
 void MainWindow::on_rb_adc_stop_clicked()
 {
     camera_page->t5.stop();
+    AD.close();
     //ADC停止采集和发送数据
 }
 
+
+
 void MainWindow::on_rb_adc_static_clicked()
 {
-
+    AD.open();
     camera_page->t5.start(1000);
-    main_window->SendADC();
-
+    main_window->SendADC(AD.ad());
     //ADC以固定速率采集和发送
 }
 
@@ -138,11 +141,21 @@ void MainWindow::on_rb_adc_dynamic_clicked()
 
 void MainWindow::on_sb_camera_freq_valueChanged(int camera_freq)
 {
+    camera_page->t4.stop();
+    camera_page->isCapOpen=0;
+    camera_page->change_time(camera_freq);
+    camera_page->fun_cap_open();
+
+    //camera_page->isCapOpen=0;
     //相机动态采集速率改变响应函数
 }
 
 void MainWindow::on_sb_adc_freq_valueChanged(int adc_freq)
 {
+    camera_page->t5.stop();
+    camera_page->t5.start(adc_freq);
+    main_window->SendADC(AD.ad());
+
     //adc动态采集速率改变响应函数
 }
 
@@ -278,19 +291,17 @@ void MainWindow::SendRGB(unsigned char *frameBufRGB)
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=2;
     //const char* RGB = (const char*)(char*)frameBufRGB;
-    sprintf(buffer_send+1, "%s", *frameBufRGB);
-    //memcpy(buffer_send,*RGB,(strlen(RGB) + 1));
-    write(fd, buffer_send, strlen(buffer_send));
+    //sprintf(buffer_send+1, "%s", *frameBufRGB);
+    memcpy(buffer_send+1,frameBufRGB,640*480*3);
+    write(fd, buffer_send, 640*480*3+1);
 
 }
 
-void MainWindow::SendADC()
+void MainWindow::SendADC(int ad)
 {
-    ad_reader AD;
-    AD.init();
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=1;
-    sprintf(buffer_send+1, "%d", AD.ad());
+    sprintf(buffer_send+1, "%d", ad);
     write(fd, buffer_send, strlen(buffer_send));
 
     //char *buf;

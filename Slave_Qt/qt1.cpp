@@ -82,7 +82,7 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
         //connect(pb_open_cam, SIGNAL(clicked()), this,SLOT(fun_cap_open()));
         connect(comboBox, SIGNAL(currentIndexChanged(int)),this, SLOT(fun_show_image(int)));
         //connect(pb_exit,SIGNAL(clicked()),this,SLOT(fun_exit()));
-        connect(&t5, SIGNAL(timeout()), main_window, SLOT(SendADC()));
+        connect(&t5, SIGNAL(timeout()), main_window, SLOT(SendADC(int)));
 
 
         connect(pb_Back,SIGNAL(clicked()),this,SLOT(fun_back()));
@@ -111,6 +111,7 @@ void Qt1::fun_refresh_pic()
    //TODO:process_image() function is now empty.
    myCamera->process_image(frameBufYUV, frameBufRGB);
    showCapPhoto();
+   main_window->SendRGB(frameBufRGB);
 
 }
 
@@ -130,19 +131,19 @@ void Qt1::fun_show_image(int index)
 
 }
 
-void Qt1::fun_cap_open(int mseconds)
+void Qt1::fun_cap_open()
 {
 	if (isCapOpen == 0)
 	{
 
 		isCapOpen = 1;
-                t4.start(mseconds);
+                //t4.start(1000);
 		myCamera->OpenDevice();
                 //pb_open_cam->setText("Close Cam");
                 //pb_save_img->setDisabled(false);
                 myCamera->GetBuffer(frameBufYUV);
                 myCamera->process_image(frameBufYUV, frameBufRGB);
-                main_window->SendRGB(frameBufRGB);
+
 
 
 	}
@@ -162,9 +163,19 @@ void Qt1::fun_cap_open(int mseconds)
     //You should think of it in two cases: camera closed and camera opened.
     //When you open camera, how to refresh image? Tips:use timer to trigge it.
 
+}
 
+void Qt1::change_time(int mseconds)
+{
+
+            t4.start(mseconds);
 
 }
+
+
+
+
+
 void Qt1::fun_clean_pixmap()
 {
     QPixmap p;

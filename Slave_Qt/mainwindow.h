@@ -34,6 +34,8 @@ public:
 
     int set_opt(int,int,int,char,int);
 
+    ad_reader AD;
+
 
 
     ~MainWindow();
@@ -75,7 +77,7 @@ private slots:
 
     void newConnectionSlot();
     void dataReceived();
-    void SendADC();
+    void SendADC(int);
 
 private:
     QButtonGroup* SendingButtons;
