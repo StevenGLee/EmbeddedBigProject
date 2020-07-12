@@ -19,6 +19,7 @@ int main(int argc, char** argv)
         adc_page = new ADC_page();
         main_window = new MainWindow();
         main_window->show();
+
 	// MD.setDefaultWeight();
 	return app.exec();
 }
