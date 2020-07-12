@@ -73,24 +73,24 @@ MainWindow::~MainWindow()
 void MainWindow::on_rb_UART_clicked()
 {
     isuart=1;
-        //UARTÍ¨ÐÅ·½Ê½
+        //UARTÍ¨ï¿½Å·ï¿½Ê½
 }
 
 void MainWindow::on_rb_Ethernet_clicked()
 {
     isServer==1;
 
-    //EthernetÍ¨ÐÅ·½Ê½
+    //EthernetÍ¨ï¿½Å·ï¿½Ê½
 }
 
 void MainWindow::on_rb_modbus_clicked()
 {
-    //modbusÍ¨ÐÅ·½Ê½
+    //modbusÍ¨ï¿½Å·ï¿½Ê½
 }
 
 void MainWindow::on_rb_mqtt_clicked()
 {
-    //mqttÍ¨ÐÅ·½Ê½
+    //mqttÍ¨ï¿½Å·ï¿½Ê½
 }
 
 void MainWindow::on_rb_camera_stop_clicked()
@@ -98,7 +98,7 @@ void MainWindow::on_rb_camera_stop_clicked()
 
     camera_page->isCapOpen=1;
     camera_page->fun_cap_open();
-    //Ïà»úÍ£Ö¹²É¼¯ºÍ·¢ËÍÊý¾Ý
+    //ï¿½ï¿½ï¿½Í£Ö¹ï¿½É¼ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_rb_camera_static_clicked()
@@ -107,24 +107,24 @@ void MainWindow::on_rb_camera_static_clicked()
     camera_page->t4.start(1000);
     camera_page->isCapOpen=0;
     camera_page->fun_cap_open();
-    //Ïà»úÒÔ¹Ì¶¨ËÙÂÊ²É¼¯ºÍ·¢ËÍ
+    //ï¿½ï¿½ï¿½ï¿½Ô¹Ì¶ï¿½ï¿½ï¿½ï¿½Ê²É¼ï¿½ï¿½Í·ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_rb_camera_dynamic_clicked()
 {
-    //Ïà»úÒÔ¶¯Ì¬ËÙÂÊ²É¼¯ºÍ·¢ËÍ£¬ËÙÂÊÔÚsb_camera_freqÖÐÉèÖÃ
+    //ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½Ì¬ï¿½ï¿½ï¿½Ê²É¼ï¿½ï¿½Í·ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sb_camera_freqï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_rb_camera_dynamic_monitor_clicked()
 {
-    //Ïà»úÒÔ¹Ì¶¨ËÙÂÊ²É¼¯£¬²¢ÒÔ¶¯Ì¬¼à²âµÄ·½Ê½·¢ËÍ
+    //ï¿½ï¿½ï¿½ï¿½Ô¹Ì¶ï¿½ï¿½ï¿½ï¿½Ê²É¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¶ï¿½Ì¬ï¿½ï¿½ï¿½Ä·ï¿½Ê½ï¿½ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_rb_adc_stop_clicked()
 {
     camera_page->t5.stop();
     AD.close();
-    //ADCÍ£Ö¹²É¼¯ºÍ·¢ËÍÊý¾Ý
+    //ADCÍ£Ö¹ï¿½É¼ï¿½ï¿½Í·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 
@@ -134,13 +134,13 @@ void MainWindow::on_rb_adc_static_clicked()
     AD.open();
     camera_page->t5.start(1000);
     main_window->SendADC(AD.ad());
-    //ADCÒÔ¹Ì¶¨ËÙÂÊ²É¼¯ºÍ·¢ËÍ
+    //ADCï¿½Ô¹Ì¶ï¿½ï¿½ï¿½ï¿½Ê²É¼ï¿½ï¿½Í·ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_rb_adc_dynamic_clicked()
 {
 
-    //ADCÒÔ¶¯Ì¬ËÙÂÊ²É¼¯ºÍ·¢ËÍ£¬ËÙÂÊÔÚsb_adc_freqÖÐÉèÖÃ
+    //ADCï¿½Ô¶ï¿½Ì¬ï¿½ï¿½ï¿½Ê²É¼ï¿½ï¿½Í·ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½sb_adc_freqï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_sb_camera_freq_valueChanged(int camera_freq)
@@ -151,7 +151,7 @@ void MainWindow::on_sb_camera_freq_valueChanged(int camera_freq)
     camera_page->fun_cap_open();
 
     //camera_page->isCapOpen=0;
-    //Ïà»ú¶¯Ì¬²É¼¯ËÙÂÊ¸Ä±äÏìÓ¦º¯Êý
+    //ï¿½ï¿½ï¿½ï¿½ï¿½Ì¬ï¿½É¼ï¿½ï¿½ï¿½ï¿½Ê¸Ä±ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_sb_adc_freq_valueChanged(int adc_freq)
@@ -160,13 +160,13 @@ void MainWindow::on_sb_adc_freq_valueChanged(int adc_freq)
     camera_page->t5.start(adc_freq);
     main_window->SendADC(AD.ad());
 
-    //adc¶¯Ì¬²É¼¯ËÙÂÊ¸Ä±äÏìÓ¦º¯Êý
+    //adcï¿½ï¿½Ì¬ï¿½É¼ï¿½ï¿½ï¿½ï¿½Ê¸Ä±ï¿½ï¿½ï¿½Ó¦ï¿½ï¿½ï¿½ï¿½
 }
 
 void MainWindow::on_pb_start_sending_clicked()
 {
-    //¡°¿ªÊ¼·¢ËÍ¡±ºÍ¡°Í£Ö¹·¢ËÍ¡±°´Å¥µã»÷ÊÂ¼þ
-    if(isSending == 0)//²»ÔÚ·¢ËÍÊ±µã»÷£¬ËµÃ÷¿ªÊ¼·¢ËÍ
+    //ï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½Í¡ï¿½ï¿½Í¡ï¿½Í£Ö¹ï¿½ï¿½ï¿½Í¡ï¿½ï¿½ï¿½Å¥ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
+    if(isSending == 0)//ï¿½ï¿½ï¿½Ú·ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½Ëµï¿½ï¿½ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½
     {
         ui -> rb_UART -> setEnabled(false);
         ui -> rb_Ethernet -> setEnabled(false);
@@ -189,7 +189,7 @@ void MainWindow::on_pb_start_sending_clicked()
         }
         else if(ui->rb_Ethernet->isChecked())
         {
-            //Õâ¸öµØ·½Ò»¿´¾ÍÖªµÀÄãÐ´µÄ²»¶Ô¡£µ«ÊÇÄã×Ô¼º¸Ä¡£
+            //ï¿½ï¿½ï¿½ï¿½Ø·ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Öªï¿½ï¿½ï¿½ï¿½Ð´ï¿½Ä²ï¿½ï¿½Ô¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½Ä¡ï¿½
             if(isServer==1&&isuart==0)
             {
                 TcpServer();
@@ -211,16 +211,16 @@ void MainWindow::on_pb_start_sending_clicked()
         {
             ::close(fd);
             isuart=0;
-            //ÕâÀïÖ±½Ó¹Ø±ÕÁË´®¿Ú¡£×¢ÒâÍêÉÆÂß¼­£¬Ê¹¹Ø±Õ´®¿Úºó£¬ËùÓÐ´Ó´®¿Ú×ßµÄÊý¾Ý·¢ËÍ¶¼²»×ßÁË
-            //±ÈÈçÔÚ·¢ËÍµÄÊ±ºò£¬ÅÐ¶Ïui->rb_UART->isChecked()ÎªÕæ£¬ÇÒisSending==1Ê±²Å½øÐÐsend»òÕßwrite
+            //ï¿½ï¿½ï¿½ï¿½Ö±ï¿½Ó¹Ø±ï¿½ï¿½Ë´ï¿½ï¿½Ú¡ï¿½×¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¼ï¿½ï¿½ï¿½Ê¹ï¿½Ø±Õ´ï¿½ï¿½Úºï¿½ï¿½ï¿½ï¿½Ð´Ó´ï¿½ï¿½ï¿½ï¿½ßµï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½Í¶ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+            //ï¿½ï¿½ï¿½ï¿½ï¿½Ú·ï¿½ï¿½Íµï¿½Ê±ï¿½ï¿½ï¿½Ð¶ï¿½ui->rb_UART->isChecked()Îªï¿½æ£¬ï¿½ï¿½isSending==1Ê±ï¿½Å½ï¿½ï¿½ï¿½sendï¿½ï¿½ï¿½ï¿½write
         }
         else if(ui->rb_Ethernet->isChecked())
         {
             isServer=0;
             tcpsocket->write("exit");
             tcpserver->close();
-            //µã»÷¡°Í£Ö¹·¢ËÍ¡±£¬¹Ø±ÕÁ¬½Ó£¬²¢¹Ø±Õserver
-            //¹Ø±ÕÁ¬½ÓÇ°ÏÈ·¢ËÍ¡°exit¡±Õâ¸ö×Ö·û´®£¬Í¨ÖªÉÏÎ»»ú¹Ø±ÕÁ¬½Ó
+            //ï¿½ï¿½ï¿½ï¿½ï¿½Í£Ö¹ï¿½ï¿½ï¿½Í¡ï¿½ï¿½ï¿½ï¿½Ø±ï¿½ï¿½ï¿½ï¿½Ó£ï¿½ï¿½ï¿½ï¿½Ø±ï¿½server
+            //ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½Ç°ï¿½È·ï¿½ï¿½Í¡ï¿½exitï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½ï¿½Í¨Öªï¿½ï¿½Î»ï¿½ï¿½ï¿½Ø±ï¿½ï¿½ï¿½ï¿½ï¿½
         }
 
     }
@@ -228,13 +228,13 @@ void MainWindow::on_pb_start_sending_clicked()
 
 void MainWindow::on_pb_exit_clicked()
 {
-    //¡±ÍË³ö³ÌÐò¡°°´Å¥µã»÷ÊÂ¼þ
+    //ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½ò¡°°ï¿½Å¥ï¿½ï¿½ï¿½ï¿½Â¼ï¿½
     close();
 }
 
 void MainWindow::on_pb_camera_page_clicked()
 {
-    //¡°½øÈëÏà»úÒ³Ãæ¡±ÒÔ²é¿´µ±Ç°ÕýÔÚ²É¼¯µÄÍ¼Ïñ£¬ÒÔ¼°²é¿´ÒÑ¾­±£´æµÄÍ¼Ïñ
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ò³ï¿½æ¡±ï¿½Ô²é¿´ï¿½ï¿½Ç°ï¿½ï¿½ï¿½Ú²É¼ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ô¼ï¿½ï¿½é¿´ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
     hide();
     camera_page->show();
     //show();
@@ -242,7 +242,7 @@ void MainWindow::on_pb_camera_page_clicked()
 
 void MainWindow::on_pb_adc_page_clicked()
 {
-    //¡°½øÈëADCÒ³Ãæ¡±ÒÔ²é¿´¼ÇÂ¼µÄadcÊý¾ÝÇúÏß£¬ÒÔ¼°±£´æµ±Ç°ÏÖÊµµÄÊý¾ÝÇúÏß
+    //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ADCÒ³ï¿½æ¡±ï¿½Ô²é¿´ï¿½ï¿½Â¼ï¿½ï¿½adcï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß£ï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½æµ±Ç°ï¿½ï¿½Êµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     hide();
     adc_page->show();
     //show();
@@ -276,7 +276,7 @@ void MainWindow::newConnectionSlot()
      //QString str=buffer_send;
 
 
-     //½ÓÊÕµ½ÐÂÊý¾ÝµÄÐÅºÅÒÔ¼°Á¬½Ó¶Ï¿ªµÄÐÅºÅ
+     //ï¿½ï¿½ï¿½Õµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ýµï¿½ï¿½Åºï¿½ï¿½Ô¼ï¿½ï¿½ï¿½ï¿½Ó¶Ï¿ï¿½ï¿½ï¿½ï¿½Åºï¿½
      connect(tcpsocket, SIGNAL(readyRead()),this, SLOT(dataReceived()));
      connect(tcpsocket, SIGNAL(disconnected()), tcpsocket, SLOT(deleteLater()));
 }
@@ -286,7 +286,7 @@ void MainWindow::newConnectionSlot()
 void MainWindow::dataReceived()
 {
     QByteArray buffer;
-    //¶ÁÈ¡»º³åÇøÊý¾Ý
+    //ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
     buffer = tcpsocket->readAll();
     if(!buffer.isEmpty())
     {
@@ -339,20 +339,20 @@ void MainWindow::SendADC(int ad)
 int MainWindow::set_opt(int fd_uart,int nSpeed, int nBits, char nEvent, int nStop)
 {
         struct termios newtio,oldtio;
-        //tcgetarr¶ÁÈ¡µ±Ç°´®¿ÚµÄ²ÎÊýÖµ£¬fdÊÇopen·µ»ØµÄ¾ä±ú
+        //tcgetarrï¿½ï¿½È¡ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ÚµÄ²ï¿½ï¿½ï¿½Öµï¿½ï¿½fdï¿½ï¿½openï¿½ï¿½ï¿½ØµÄ¾ï¿½ï¿½
         if  ( tcgetattr( fd_uart,&oldtio)  !=  0) {
                 perror("SetupSerial 1");
                 return -1;
         }
         bzero( &newtio, sizeof( newtio ) );
 
-        //ÉèÖÃ×Ö·û´óÐ¡
+        //ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½Ð¡
         newtio.c_cflag  |=  CLOCAL | CREAD;
         newtio.c_cflag &= ~CSIZE;
 
         switch( nBits )
         {
-                //ÉèÖÃÍ£Ö¹Î»
+                //ï¿½ï¿½ï¿½ï¿½Í£Ö¹Î»
                 case 7:
                         newtio.c_cflag |= CS7;
                         break;
@@ -360,7 +360,7 @@ int MainWindow::set_opt(int fd_uart,int nSpeed, int nBits, char nEvent, int nSto
                         newtio.c_cflag |= CS8;
                         break;
         }
-        //ÉèÖÃÆæÅ¼Ð£ÑéÎ»
+        //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Å¼Ð£ï¿½ï¿½Î»
         switch( nEvent )
         {
         case 'O':
@@ -377,7 +377,7 @@ int MainWindow::set_opt(int fd_uart,int nSpeed, int nBits, char nEvent, int nSto
                 newtio.c_cflag &= ~PARENB;
                 break;
         }
-        //ÉèÖÃ²¨ÌØÂÊ
+        //ï¿½ï¿½ï¿½Ã²ï¿½ï¿½ï¿½ï¿½ï¿½
         switch( nSpeed )
         {
                 case 2400:

@@ -110,9 +110,8 @@ void Qt1::fun_refresh_pic()
    }
    //TODO:process_image() function is now empty.
    myCamera->process_image(frameBufYUV, frameBufRGB);
-   showCapPhoto();
    main_window->SendRGB(frameBufRGB);
-
+   showCapPhoto();
 }
 
 void Qt1::fun_exit()
@@ -143,8 +142,6 @@ void Qt1::fun_cap_open()
                 //pb_save_img->setDisabled(false);
                 myCamera->GetBuffer(frameBufYUV);
                 myCamera->process_image(frameBufYUV, frameBufRGB);
-
-
 
 	}
 	else

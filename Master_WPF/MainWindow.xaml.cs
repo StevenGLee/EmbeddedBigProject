@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -36,7 +37,16 @@ namespace Master_WPF
         string AdcString;
         int AdcData;
         SequenceData AdcDatas, Data2Show;
-
+        enum LowerProtocol
+        {
+            UART, Ethernet
+        }
+        LowerProtocol lowerProtocol;
+        enum UpperProtocol
+        {
+            Customized, Modbus, MQTT
+        }
+        UpperProtocol upperProtocol;
         public MainWindow()
         {
             InitializeComponent();
@@ -45,6 +55,7 @@ namespace Master_WPF
             buffer = new byte[1024 * 1024];
             ConnectionState = 0;
             AdcDatas = new SequenceData(20, 10000, 0);
+            ConsoleManager.Show();
         }
 
         private void StartTrans_Click(object sender, RoutedEventArgs e)
@@ -63,27 +74,32 @@ namespace Master_WPF
                     client.Connect(IPAddress.Parse(IPTextBox.Text), 10492);
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 使用Ethernet连接下位机。\n";
                     client.Client.BeginReceive(buffer, 0, 1024 * 1024, SocketFlags.None, OnRecieve, null);
+                    lowerProtocol = LowerProtocol.Ethernet;
                 }
                 if (UartRadioButton.IsChecked == true)
                 {
                     serial = new SerialPort(SerialPortComboBox.Text);
+                    serial.BaudRate = 115200;
                     serial.Open();
                     serial.BaseStream.BeginRead(buffer, 0, 1024 * 1024, OnRecieve, null);
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 使用UART连接下位机。\n";
+                    //serial.DataReceived += OnDataRecieved;
+                    lowerProtocol = LowerProtocol.UART;
                 }
                 StartTrans.Content = "断开连接";
                 ConnectionState = 1;
+                upperProtocol = UpperProtocol.Customized;//暂时这么设置上
             }
             else
             {
-                if (EthernetRadioButton.IsChecked == true)
+                if (lowerProtocol == LowerProtocol.Ethernet)
                 {
                     client.Client.Send(Encoding.ASCII.GetBytes("exit"));
                     client.Close();
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 断开与下位机的Ethernet连接。\n";
 
                 }
-                if (UartRadioButton.IsChecked == true)
+                if (lowerProtocol == LowerProtocol.UART)
                 {
                     serial.Close();
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 断开与下位机的UART连接。\n";
@@ -93,27 +109,133 @@ namespace Master_WPF
             }
         }
 
+        //private void OnDataRecieved(object sender, SerialDataReceivedEventArgs e)
+        //{
+        //    serial.DataReceived -= OnDataRecieved;
+        //    Thread.Sleep(10);
+        //    serial.Read(buffer, 0, 1024 * 1024);
+        //    //收到TCP消息或uart消息
+        //    Dispatcher.Invoke(() =>
+        //    {
+        //        LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到长度为" + length.ToString() + "的数据。\n";
+        //    });
+
+        //    if (upperProtocol == UpperProtocol.Customized)
+        //    {
+        //        switch (buffer[0])
+        //        {
+        //            case 1://ADC传来的值
+        //                int c = 0;
+        //                for (int i = 0; i < 1024 * 1024; i++)
+        //                {
+        //                    if (c > 1)
+        //                        buffer[i] = 0;
+        //                    else if (buffer[i] == 1)
+        //                    {
+        //                        buffer[i] = 0;
+        //                        c++;
+        //                    }
+        //                }
+        //                AdcString = Encoding.ASCII.GetString(buffer.Skip(1).ToArray());
+        //                //AdcString.
+        //                AdcData = Convert.ToInt32(AdcString);
+        //                Dispatcher.Invoke(() =>
+        //                {
+        //                    ADCDataTextbox.Text = "ADC值：" + AdcString;
+        //                    AdcDataBar.Value = AdcData;
+        //                    AdcDatas.AddSequenceData(AdcData);
+        //                    AdcGraph.HotspotDatas = AdcDatas;
+        //                    LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到了ADC传来的数据：" + AdcString + "。\n";
+        //                });
+        //                break;
+        //            case 2://Camera数据
+        //                if (length == 640 * 480 * 3 + 1)//接受不完整，便丢弃
+        //                {
+        //                    CameraData = new WriteableBitmap(640, 480, 400, 400, PixelFormats.Rgb24, null);
+        //                    //unsafe
+        //                    {
+        //                        CameraData.Lock();
+        //                        Marshal.Copy(buffer.Skip(1).ToArray(), 0, CameraData.BackBuffer, 640 * 480 * 3); //请注意_wbBitmap的数据格式以及buffer大小，以免溢出和显示异常
+        //                        CameraData.AddDirtyRect(new Int32Rect(0, 0, 640, 480));
+        //                        CameraData.Unlock();
+        //                    }
+        //                    Dispatcher.Invoke(() =>
+        //                    {
+        //                        CameraImage.Source = CameraData;
+        //                        LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到相机数据，已显示。\n";
+        //                    });
+        //                }
+        //                else
+        //                    Dispatcher.Invoke(() =>
+        //                    {
+        //                        LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到不完整相机数据，已丢弃。\n";
+        //                    });
+        //                break;
+        //            default:
+        //                Dispatcher.Invoke(() =>
+        //                {
+        //                    LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到了不认识的数据，已丢弃。\n";
+        //                });
+        //                break;
+        //        }
+        //    }
+        //    serial.DataReceived += OnDataRecieved;
+
+        //}
+
         private void OnRecieve(IAsyncResult ar)
         {
+            Console.WriteLine("OnReceive Called");
+
+            Thread.Sleep(1000);
             //收到TCP消息或uart消息
-            if (EthernetRadioButton.IsChecked == true)
+            if (lowerProtocol == LowerProtocol.Ethernet)
                 length = client.Client.EndReceive(ar);
-            else if (UartRadioButton.IsChecked == true)
+            else if (lowerProtocol == LowerProtocol.UART)
                 length = serial.BaseStream.EndRead(ar);
             else
                 throw new Exception("不知道该从哪里read了！");
-            if (CustomizedRadioButton.IsChecked == true)
+            Dispatcher.Invoke(() =>
+            {
+                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到长度为" + length.ToString() + "的数据。\n";
+            });
+
+            if (upperProtocol == UpperProtocol.Customized)
             {
                 switch (buffer[0])
                 {
                     case 1://ADC传来的值
+                        int c = 0;
+                        for (int i = 0; i < 1024 * 1024; i++)
+                        {
+                            if (c > 1)
+                                buffer[i] = 0;
+                            else if (buffer[i] == 1)
+                            {
+                                buffer[i] = 0;
+                                c++;
+                            }
+                        }
+                        c = 0;
+                        for (int i = 0; i<2; c++)
+                            if (buffer[c] == 0)
+                                i++;
                         AdcString = Encoding.ASCII.GetString(buffer.Skip(1).ToArray());
-                        AdcData = Convert.ToInt32(AdcString);
-                        ADCDataTextbox.Text = "ADC值：" + AdcString;
-                        AdcDataBar.Value = AdcData;
-                        AdcDatas.AddSequenceData(AdcData);
-                        AdcGraph.HotspotDatas = AdcDatas;
-                        LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到了ADC传来的数据：" +AdcString +"。\n";
+                        string tmp = "";
+                        for (int i = 0; AdcString[i]!=0; i++)
+                            tmp+=AdcString[i];
+                        
+                        if (tmp.Length == 0)
+                            break;
+                        AdcData = Convert.ToInt32(tmp);
+                        Dispatcher.Invoke(() =>
+                        {
+                            ADCDataTextbox.Text = "ADC值：" + tmp;
+                            AdcDataBar.Value = AdcData;
+                            AdcDatas.AddSequenceData(AdcData);
+                            AdcGraph.HotspotDatas = AdcDatas;
+                            LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到了ADC传来的数据：" + tmp + "。\n";
+                        });
                         break;
                     case 2://Camera数据
                         if (length == 640 * 480 * 3 + 1)//接受不完整，便丢弃
@@ -126,21 +248,30 @@ namespace Master_WPF
                                 CameraData.AddDirtyRect(new Int32Rect(0, 0, 640, 480));
                                 CameraData.Unlock();
                             }
-                            CameraImage.Source = CameraData;
-                            LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到相机数据，已显示。\n";
+                            Dispatcher.Invoke(() =>
+                            {
+                                CameraImage.Source = CameraData;
+                                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到相机数据，已显示。\n";
+                            });
                         }
                         else
-                            LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到不完整相机数据，已丢弃。\n";
+                            Dispatcher.Invoke(() =>
+                            {
+                                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到不完整相机数据，已丢弃。\n";
+                            });
                         break;
                     default:
-                        LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到了不认识的数据，已丢弃。\n";
+                        Dispatcher.Invoke(() =>
+                        {
+                            LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到了不认识的数据，已丢弃。\n";
+                        });
                         break;
                 }
             }
-            if (EthernetRadioButton.IsChecked == true)
-                client.Client.BeginReceive(buffer, 0, 1024 * 1024, SocketFlags.None, OnRecieve, client);
-            else if (UartRadioButton.IsChecked == true)
-                serial.BaseStream.BeginRead(buffer, 0, 1024 * 1024, OnRecieve, serial);
+            if (lowerProtocol == LowerProtocol.Ethernet)
+                client.Client.BeginReceive(buffer, 0, 1024 * 1024, SocketFlags.None, OnRecieve, null);
+            else if (lowerProtocol == LowerProtocol.UART)
+                serial.BaseStream.BeginRead(buffer, 0, 1024 * 1024, OnRecieve, null);
 
         }
 
@@ -199,16 +330,6 @@ namespace Master_WPF
             }
 
             AdcDatas.SaveTo(strpath);
-        }
-
-        private void UartRadioButton_Click(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void EthernetRadioButton_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         private void LoadADCGraph_Click(object sender, RoutedEventArgs e)
