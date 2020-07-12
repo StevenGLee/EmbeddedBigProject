@@ -43,8 +43,8 @@
                             </Grid.RowDefinitions>
                             <TextBlock Text="上层协议" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                             <TextBlock Text="底层协议" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1"/>
-                            <RadioButton x:Name="UartRadioButton" Content="UART" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="True" Grid.Row="1" Grid.Column="1" GroupName="LowerProtocol" Click="UartRadioButton_Click"/>
-                            <RadioButton x:Name="EthernetRadioButton" Content="Ethernet" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" GroupName="LowerProtocol" Click="EthernetRadioButton_Click"/>
+                            <RadioButton x:Name="UartRadioButton" Content="UART" HorizontalAlignment="Left" VerticalAlignment="Center" IsChecked="True" Grid.Row="1" Grid.Column="1" GroupName="LowerProtocol"/>
+                            <RadioButton x:Name="EthernetRadioButton" Content="Ethernet" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="1" GroupName="LowerProtocol"/>
                             <RadioButton x:Name="ModbusRadioButton" Content="ModBus TCP" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="2" Grid.Column="0" IsEnabled="False" GroupName="UpperProtocol"/>
                             <RadioButton x:Name="MqttRadioButton" Content="MQTT" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="3" Grid.Column="0" IsEnabled="False" GroupName="UpperProtocol"/>
                             <RadioButton x:Name="CustomizedRadioButton" Content="自定协议" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Row="1" Grid.Column="0" IsChecked="True" GroupName="UpperProtocol"/>
@@ -52,7 +52,7 @@
                             <TextBox x:Name="IPTextBox" Grid.Row="4" Grid.Column="1" Margin="2"/>
                             <TextBlock Text="下位机串口：" VerticalAlignment="Center" HorizontalAlignment="Right" Grid.Row="5"/>
                             <ComboBox Name="SerialPortComboBox" Grid.Column="1" Grid.Row="5" Margin="2"/>
-                            <Button x:Name="StartTrans" Content="连接下位机" Grid.Row="3" Grid.Column="1" Margin="2,1.667,2,0" Click="StartTrans_Click" Height="20" VerticalAlignment="Top"/>
+                            <Button x:Name="StartTrans" Content="连接下位机" Grid.Row="3" Grid.Column="1" Margin="2" Click="StartTrans_Click"/>
                         </Grid>
                         <TextBlock Text="杂项" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="1"/>
                         <Grid Grid.Row="2">

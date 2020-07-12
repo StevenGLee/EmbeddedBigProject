@@ -278,10 +278,9 @@ void MainWindow::SendRGB(unsigned char *frameBufRGB)
     memset(buffer_send, 0, sizeof(buffer_send));
     buffer_send[0]=2;
     //const char* RGB = (const char*)(char*)frameBufRGB;
-    sprintf(buffer_send+1, "%s", *frameBufRGB);
-    //memcpy(buffer_send,*RGB,(strlen(RGB) + 1));
-    write(fd, buffer_send, strlen(buffer_send));
-
+    //sprintf(buffer_send+1, "%s", *frameBufRGB);
+    memcpy(buffer_send+1, frameBufRGB, 640*480*3);
+    write(fd, buffer_send, 640*480*3+1);
 }
 
 void MainWindow::SendADC()
