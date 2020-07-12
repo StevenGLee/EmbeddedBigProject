@@ -128,15 +128,19 @@ void Qt1::fun_show_image(int index)
 
 }
 
-void Qt1::fun_cap_open()
+void Qt1::fun_cap_open(int mseconds)
 {
 	if (isCapOpen == 0)
 	{
-                t4.start(50);//定时器如何绑定
+
 		isCapOpen = 1;
+                t4.start(mseconds);
 		myCamera->OpenDevice();
                 //pb_open_cam->setText("Close Cam");
                 //pb_save_img->setDisabled(false);
+                myCamera->GetBuffer(camera_page->frameBufYUV);
+                myCamera->process_image(camera_page->frameBufYUV, camera_page->frameBufRGB);
+
 	}
 	else
 	{

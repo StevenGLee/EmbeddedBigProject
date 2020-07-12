@@ -90,11 +90,10 @@ void MainWindow::on_rb_camera_stop_clicked()
 
 void MainWindow::on_rb_camera_static_clicked()
 {
+    camera_page->t4.stop();
+    camera_page->isCapOpen=0;
+    camera_page->fun_cap_open(1000);
 
-    camera_page->myCamera->OpenDevice();
-    camera_page->myCamera->GetBuffer(camera_page->frameBufYUV);
-    camera_page->myCamera->process_image(camera_page->frameBufYUV, camera_page->frameBufRGB);
-    main_window->ChangeSampleTime(1000);
     main_window->SendM();
 
     //相机以固定速率采集和发送
@@ -214,27 +213,7 @@ void MainWindow::newConnectionSlot()
      connect(tcpsocket, SIGNAL(disconnected()), tcpsocket, SLOT(deleteLater()));
 }
 
-void MainWindow::ChangeSampleTime(int milliseconds)
-{
 
-    ad_reader AD;
-    AD.init();
-    t5.start(milliseconds);
-    ad_zhi=AD.ad();
-
-    //QString filepath = "./images/"; //"/mnt/usb/images/";
-    //QDateTime d=QDateTime::currentDateTime();
-    //filepath += d.toString("MM-dd_hh-mm-ss");
-    //filepath += ".jpg";
-    //m_image->save(filepath, "JPG", -1);
-
-    Qt1 Cam;
-    Cam.fun_take_photo();
-    RGB_zhi=Cam.frameBufRGB;
-    sprintf(buffer_send,"%d\n %hhu\n",ad_zhi,RGB_zhi);
-
-
-}
 
 void MainWindow::dataReceived()
 {
@@ -254,6 +233,16 @@ void MainWindow::dataReceived()
 void MainWindow::SendM()
 {
     int func;
+
+    ad_reader AD;
+    AD.init();
+    ad_zhi=AD.ad();
+
+
+    RGB_zhi=camera_page->frameBufRGB;
+    sprintf(buffer_send,"%d\n %hhu\n",ad_zhi,RGB_zhi);
+
+
 
     printf("Choose send way:\n1. UART (default)\n2. socket\n");
     scanf("%d", &func);

@@ -34,7 +34,6 @@ public:
     unsigned char *RGB_zhi;
 
 
-    void ChangeSampleTime(int);
     void SendM();
     int set_opt(int,int,int,char,int);
 

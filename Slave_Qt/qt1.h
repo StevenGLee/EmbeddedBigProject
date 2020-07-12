@@ -35,7 +35,7 @@ public slots:
 	void fun_prev();
 	void fun_delete();
 	void fun_open();
-        void fun_cap_open();
+        void fun_cap_open(int mseconds);
         void fun_take_photo();
         void fun_refresh_pic();
         void fun_refresh_label();
