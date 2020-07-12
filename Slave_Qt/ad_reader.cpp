@@ -1,7 +1,9 @@
 #include"ad_reader.h"
 
+
 void ad_reader::init()
 {
+    adc= "/dev/adc";
     if ((fd_adc = open(adc, O_RDWR | O_NOCTTY | O_NDELAY)) < 0)
 	{
 		printf("open ADC error\n");
@@ -10,7 +12,7 @@ void ad_reader::init()
 
 }
 
-int ad_reader::ad_reader()
+int ad_reader::ad()
 {
     memset(buffer, 0, sizeof(buffer));
     int len=0;
@@ -18,7 +20,7 @@ int ad_reader::ad_reader()
     if(len == 0)
     {
 		printf("ADC read error \n");
-		return;
+                return 0;
     }
 	else {
 		r = atoi(buffer);

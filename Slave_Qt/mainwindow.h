@@ -4,6 +4,12 @@
 #include <QDialog>
 #include "qt1.h"
 #include "adc_page.h"
+#include <QTcpServer>
+#include <QTcpSocket>
+#include"camera.h"
+#include"ad_reader.h"
+#define MAXSIZE 1048576
+
 
 namespace Ui {
     class MainWindow;
@@ -15,6 +21,24 @@ class MainWindow : public QDialog
 
 public:
     explicit MainWindow(QWidget *parent = 0);
+    void TcpServer();
+    int run();
+    int ad_zhi;
+    QTimer t5;
+    int milliseconds;
+    char buffer_send[MAXSIZE];
+    int fd_uart, fd_file, nByte,fd;
+            //(1)串口3和文件的地址，注意ttySAC3是con2，靠近耳机接口的串口
+    char *uart3;
+
+
+
+    char ChangeSampleTime(int);
+    void SendM();
+    int set_opt(int,int,int,char,int);
+
+
+
     ~MainWindow();
 
 private slots:
@@ -52,12 +76,20 @@ private slots:
 
     void on_pb_adc_page_clicked();
 
+    void newConnectionSlot(int milliseconds);
+    void dataReceived();
+
+
 private:
     QButtonGroup* SendingButtons;
     QButtonGroup* CameraButtons;
     QButtonGroup* ADCButtons;
     Ui::MainWindow *ui;
     int isSending;
+    QTcpServer *tcpserver;
+    QTcpSocket *tcpsocket;
+
+
     //Qt1 *camera_page;
     //ADC_page *adc_page;
 

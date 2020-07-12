@@ -1,13 +1,13 @@
 #ifndef READER_H
 #define READER_H
 #include <QTimer>
-#include"camera.h"
-#include"ad_reader.h"
 
 class reader
 {
-private:
+public:
+int ad_zhi;
 QTimer t5;
+char buffer_send[MAXSIZE];
 void ChangeSampleTime(int milliseconds);
 
 };
