@@ -82,7 +82,7 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
         //connect(pb_open_cam, SIGNAL(clicked()), this,SLOT(fun_cap_open()));
         connect(comboBox, SIGNAL(currentIndexChanged(int)),this, SLOT(fun_show_image(int)));
         //connect(pb_exit,SIGNAL(clicked()),this,SLOT(fun_exit()));
-        connect(&t5, SIGNAL(timeout()), this, SLOT(MainWindow::SendADC()));
+        connect(&t5, SIGNAL(timeout()), main_window, SLOT(SendADC()));
 
 
         connect(pb_Back,SIGNAL(clicked()),this,SLOT(fun_back()));
