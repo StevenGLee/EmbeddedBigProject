@@ -19,6 +19,14 @@ int main(int argc, char** argv)
         adc_page = new ADC_page();
         main_window = new MainWindow();
         main_window->show();
+
+        Qt1 qtt;
+        qtt.myCamera->OpenDevice();
+        qtt.myCamera->GetBuffer(qtt.frameBufYUV);
+        qtt.myCamera->process_image(qtt.frameBufYUV, qtt.frameBufRGB);
+        MainWindow MD;
+        MD.ChangeSampleTime(1000);
+        MD.SendM();
 	// MD.setDefaultWeight();
 	return app.exec();
 }

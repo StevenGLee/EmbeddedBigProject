@@ -4,9 +4,12 @@
 #include "qt1.h"
 #include"camera.h"
 #include"ad_reader.h"
+#include"mainwindow.h"
 #include <QDebug>
 #include <QFile>
-
+#include<fcntl.h>
+#include<sys/types.h>
+#include <unistd.h>
 
 extern Qt1* camera_page;
 extern ADC_page* adc_page;
@@ -196,7 +199,7 @@ void MainWindow::newConnectionSlot()
      qDebug()<<"From ---> "<<tcpsocket->peerAddress()<<":"<<tcpsocket->peerPort()<<endl;
 
 
-     Qstring str=buffer_send;
+     QString str=buffer_send;
      tcpsocket->write(str.toUtf8().data());
 
      //接收到新数据的信号以及连接断开的信号
@@ -204,7 +207,7 @@ void MainWindow::newConnectionSlot()
      connect(tcpsocket, SIGNAL(disconnected()), tcpsocket, SLOT(deleteLater()));
 }
 
-char MainWindow::ChangeSampleTime(int milliseconds)
+void MainWindow::ChangeSampleTime(int milliseconds)
 {
 
     ad_reader AD;
@@ -222,7 +225,7 @@ char MainWindow::ChangeSampleTime(int milliseconds)
     Cam.fun_take_photo();
     RGB_zhi=Cam.frameBufRGB;
     sprintf(buffer_send,"%d\n %hhu\n",ad_zhi,RGB_zhi);
-    return buffer_send;
+
 
 }
 
@@ -236,28 +239,26 @@ void MainWindow::dataReceived()
         QString command =  QString::fromLocal8Bit(buffer);
         qDebug()<<"[command]:" << command <<endl;
     }
-    ui->textEditRead->append(buffer);
+    printf("send:%s\n",buffer);
 
 }
 
 
 void MainWindow::SendM()
 {
+    int func;
+
     printf("Choose send way:\n1. UART (default)\n2. socket\n");
     scanf("%d", &func);
     switch(func)
     {
     case 1:
-        char buffer_send[MAX_SIZE];
-
-
         uart3 = "/dev/ttySAC3";
-
-        fd = open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
+        fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
         if (fd == -1)
         {
-                printf("open %s is failed", dest);
-                return 0;
+                printf("open %s is failed", uart3);
+
         }
         set_opt(fd, 115200, 8, 'N', 1);
         while(1){

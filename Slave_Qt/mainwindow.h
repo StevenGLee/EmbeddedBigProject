@@ -8,6 +8,7 @@
 #include <QTcpSocket>
 #include"camera.h"
 #include"ad_reader.h"
+#include <QString>
 #define MAXSIZE 1048576
 
 
@@ -23,17 +24,17 @@ public:
     explicit MainWindow(QWidget *parent = 0);
     void TcpServer();
     int run();
-    int ad_zhi;
     QTimer t5;
     int milliseconds;
     char buffer_send[MAXSIZE];
     int fd_uart, fd_file, nByte,fd;
             //(1)串口3和文件的地址，注意ttySAC3是con2，靠近耳机接口的串口
     char *uart3;
+    int ad_zhi;
+    unsigned char *RGB_zhi;
 
 
-
-    char ChangeSampleTime(int);
+    void ChangeSampleTime(int);
     void SendM();
     int set_opt(int,int,int,char,int);
 
@@ -76,7 +77,7 @@ private slots:
 
     void on_pb_adc_page_clicked();
 
-    void newConnectionSlot(int milliseconds);
+    void newConnectionSlot();
     void dataReceived();
 
 
