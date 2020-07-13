@@ -101,6 +101,18 @@ void MainWindow::on_rb_camera_stop_clicked()
     if(camera_page->isCapOpen == 1)
         camera_page->fun_cap_open();
         //相机停止采集和发送数据
+    char buffer[1];
+    buffer[0] = 8;
+    if(isSending)
+        if(isServer==0&&isuart==1)
+        {
+
+        }
+        else if(isServer==1&&isuart==0)
+        {
+            tcpsocket->write(buffer,1);
+        }
+
 }
 
 void MainWindow::on_rb_camera_static_clicked()
@@ -110,6 +122,17 @@ void MainWindow::on_rb_camera_static_clicked()
     else
         camera_page->t4.stop();
     camera_page->t4.start(1000);
+    char buffer[1];
+    buffer[0] = 9;
+    if(isSending)
+        if(isServer==0&&isuart==1)
+        {
+
+        }
+        else if(isServer==1&&isuart==0)
+        {
+            tcpsocket->write(buffer,1);
+        }
 
     //相机以固定速率采集和发送
 }
@@ -117,6 +140,29 @@ void MainWindow::on_rb_camera_static_clicked()
 void MainWindow::on_rb_camera_dynamic_clicked()
 {
     //相机以动态速率采集和发送，速率在sb_camera_freq中设置
+    if(camera_page->isCapOpen == 0)
+        camera_page->fun_cap_open();
+    else
+        camera_page->t4.stop();
+    camera_page->t4.start(ui->sb_camera_freq->value() * 100);
+    char buffer[1];
+    buffer[0] = 10;
+    char buffer2[2];
+    buffer[0] = 7;
+    buffer[1] = ui->sb_camera_freq->value();
+
+    if(isSending)
+        if(isServer==0&&isuart==1)
+        {
+
+        }
+        else if(isServer==1&&isuart==0)
+        {
+            tcpsocket->write(buffer,1);
+            usleep(10000);
+            tcpsocket->write(buffer2,2);
+        }
+
 }
 
 void MainWindow::on_rb_camera_dynamic_monitor_clicked()
@@ -130,8 +176,20 @@ void MainWindow::on_rb_adc_stop_clicked()
     {
         camera_page->t5.stop();
         AD.close();
+        isAdcOpen = 0;
         //ADC停止采集和发送数据
     }
+    char buffer[1];
+    buffer[0] = 4;
+    if(isSending)
+        if(isServer==0&&isuart==1)
+        {
+
+        }
+        else if(isServer==1&&isuart==0)
+        {
+            tcpsocket->write(buffer,1);
+        }
 }
 
 
@@ -139,14 +197,59 @@ void MainWindow::on_rb_adc_stop_clicked()
 void MainWindow::on_rb_adc_static_clicked()
 {
     if(isAdcOpen == 0)
+    {
         AD.open();
+        isAdcOpen = 1;
+    }
+    else
+        camera_page->t5.stop();
+    if(isSending)
+    {
+        char buffer[1];
+        buffer[0] = 5;
+        if(isServer==0&&isuart==1)
+        {
+
+        }
+        else if(isServer==1&&isuart==0)
+        {
+            tcpsocket->write(buffer,1);
+        }
+    }
+
     camera_page->t5.start(1000);
-    main_window->SendADC();
     //ADC以固定速率采集和发送
 }
 
 void MainWindow::on_rb_adc_dynamic_clicked()
 {
+    if(isAdcOpen == 0)
+    {
+        AD.open();
+        isAdcOpen = 1;
+    }
+    else
+        camera_page->t5.stop();
+    if(isSending)
+    {
+        char buffer[1];
+        buffer[0] = 6;
+        char buffer2[2];
+        buffer[0] = 3;
+        buffer[1] = ui->sb_adc_freq->value();
+        if(isServer==0&&isuart==1)
+        {
+
+        }
+        else if(isServer==1&&isuart==0)
+        {
+            tcpsocket->write(buffer,1);
+            usleep(10000);
+            tcpsocket->write(buffer2,2);
+        }
+    }
+
+    camera_page->t5.start(ui->sb_adc_freq->value()*100);
 
     //ADC以动态速率采集和发送，速率在sb_adc_freq中设置
 }
@@ -156,7 +259,21 @@ void MainWindow::on_sb_camera_freq_valueChanged(int camera_freq)
     if(camera_page->isCapOpen == 1)
     {
         camera_page->t4.stop();
-        camera_page->t4.start(camera_freq);
+        camera_page->t4.start(camera_freq*100);
+        if(isSending)
+        {
+            char buffer2[2];
+            buffer2[0] = 7;
+            buffer2[1] = ui->sb_camera_freq->value();
+            if(isServer==0&&isuart==1)
+            {
+
+            }
+            else if(isServer==1&&isuart==0)
+            {
+                tcpsocket->write(buffer2,2);
+            }
+        }
     }
     //camera_page->isCapOpen=0;
     //相机动态采集速率改变响应函数
@@ -167,8 +284,25 @@ void MainWindow::on_sb_adc_freq_valueChanged(int adc_freq)
     if(isAdcOpen == 1)
     {
         camera_page->t5.stop();
-        camera_page->t5.start(adc_freq);
+        camera_page->t5.start(adc_freq*100);
+        if(isSending)
+        {
+            char buffer2[2];
+            buffer2[0] = 3;
+            buffer2[1] = ui->sb_adc_freq->value();
+            if(isServer==0&&isuart==1)
+            {
+
+            }
+            else if(isServer==1&&isuart==0)
+            {
+                tcpsocket->write(buffer2,2);
+            }
+        }
+
     }
+
+
     //adc动态采集速率改变响应函数
 }
 
@@ -181,20 +315,14 @@ void MainWindow::on_pb_start_sending_clicked()
         ui -> rb_Ethernet -> setEnabled(false);
         //ui -> rb_modbus -> setEnabled(false);
         //ui -> rb_mqtt -> setEnabled(false);
-        isSending = 1;
         ui -> pb_start_sending->setText("Stop Sending");
-        if(ui->rb_UART->isChecked())
+        if(isServer==0&&isuart==1)
         {
-            if(isServer==0&&isuart==1)
-            {
-                fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
-                if (fd == -1)
-                {
-                    printf("open %s is failed", uart3);
-
-                }
-                set_opt(fd, 115200, 8, 'N', 1);
-            }
+            fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
+            if (fd == -1)
+                printf("open %s is failed", uart3);
+            set_opt(fd, 115200, 8, 'N', 1);
+            isSending = 1;
         }
         else if(isServer==1&&isuart==0)
         {
@@ -213,14 +341,13 @@ void MainWindow::on_pb_start_sending_clicked()
         if(ui->rb_UART->isChecked())
         {
             ::close(fd);
-            isuart=0;
             //这里直接关闭了串口。注意完善逻辑，使关闭串口后，所有从串口走的数据发送都不走了
             //比如在发送的时候，判断ui->rb_UART->isChecked()为真，且isSending==1时才进行send或者write
         }
         else if(ui->rb_Ethernet->isChecked())
         {
-            isServer=0;
-            tcpsocket->write("exit");
+            char tmpbuf[5] = {255, 'e','x','i','t'};
+            tcpsocket->write(tmpbuf,5);
             tcpserver->close();
             //点击“停止发送”，关闭连接，并关闭server
             //关闭连接前先发送“exit”这个字符串，通知上位机关闭连接
@@ -274,7 +401,7 @@ void MainWindow::newConnectionSlot()
      qDebug()<<"[TcpServer]-------------------------------------------------new Connection !!!"<<endl;
      tcpsocket = tcpserver->nextPendingConnection();
      qDebug()<<"From ---> "<<tcpsocket->peerAddress()<<":"<<tcpsocket->peerPort()<<endl;
-
+     isSending = 1;
 
      //QString str=buffer_send;
 
@@ -282,6 +409,7 @@ void MainWindow::newConnectionSlot()
      //接收到新数据的信号以及连接断开的信号
      connect(tcpsocket, SIGNAL(readyRead()),this, SLOT(dataReceived()));
      connect(tcpsocket, SIGNAL(disconnected()), tcpsocket, SLOT(deleteLater()));
+     tcpsocket -> write("hello",6);
 }
 
 
@@ -293,10 +421,99 @@ void MainWindow::dataReceived()
     buffer = tcpsocket->readAll();
     if(!buffer.isEmpty())
     {
-        QString command =  QString::fromLocal8Bit(buffer);
-        qDebug()<<"[command]:" << command <<endl;
+        switch(buffer[0])
+        {
+        case 255://控制信息，断开连接
+            if(buffer[1] == '1' && buffer[2] == 'x' && buffer[3] == 'i' && buffer[4] == 't')
+            {
+                tcpsocket->close();
+                ui -> rb_UART -> setEnabled(true);
+                ui -> rb_Ethernet -> setEnabled(true);
+                //ui -> rb_modbus -> setEnabled(true);
+                //ui -> rb_mqtt -> setEnabled(true);
+                isSending = 0;
+                ui -> pb_start_sending->setText("Start Sending");
+            }
+            break;
+        case 3://控制信息，adc发送间隔
+            ui->sb_adc_freq->setValue(buffer[1]);
+            if(isAdcOpen == 1)
+            {
+                camera_page->t5.stop();
+                camera_page->t5.start(buffer[1]*100);
+            }
+            break;
+        case 4://控制信息，adc停止
+            ui->rb_adc_stop->setChecked(true);
+            if(isAdcOpen == 1)
+            {
+                camera_page->t5.stop();
+                AD.close();
+                isAdcOpen = 0;
+                //ADC停止采集和发送数据
+            }
+            break;
+        case 5://控制信息，adc固定间隔发送
+            ui->rb_adc_static->setChecked(true);
+
+            if(isAdcOpen == 0)
+            {
+                AD.open();
+                isAdcOpen = 1;
+            }
+            else
+                camera_page->t5.stop();
+            camera_page->t5.start(1000);
+            break;
+        case 6://控制信息，adc动态间隔发送
+            ui->rb_adc_dynamic->setChecked(true);
+            if(isAdcOpen == 0)
+            {
+                AD.open();
+                isAdcOpen = 1;
+            }
+            else
+                camera_page->t5.stop();
+            break;
+        case 7://控制信息，相机发送间隔
+            ui->sb_camera_freq->setValue(buffer[1]);
+            if(isAdcOpen == 1)
+            {
+                camera_page->t4.stop();
+                camera_page->t4.start(buffer[1]*100);
+            }
+
+            break;
+        case 8://控制信息，相机停止发送
+            ui->rb_camera_stop->setChecked(true);
+            if(camera_page->isCapOpen == 1)
+                camera_page->fun_cap_open();
+
+            break;
+        case 9://控制信息，相机固定间隔发送
+            ui->rb_camera_static->setChecked(true);
+
+            if(camera_page->isCapOpen == 0)
+                camera_page->fun_cap_open();
+            else
+                camera_page->t4.stop();
+            camera_page->t4.start(1000);
+
+            break;
+        case 10://控制信息，相机动态间隔发送
+            ui->rb_camera_dynamic->setChecked(true);
+            if(camera_page->isCapOpen == 0)
+                camera_page->fun_cap_open();
+            else
+                camera_page->t4.stop();
+
+            break;
+        case 11://
+            break;
+
+        }
     }
-    printf("send:%s\n",buffer);
+    printf("receive:%d\n",buffer.data()[0]);
 
 }
 
@@ -337,20 +554,22 @@ void MainWindow::SendRGB(unsigned char *frameBufRGB)
 void MainWindow::SendADC()
 {
     ad=AD.ad();
-    memset(buffer_send, 0, sizeof(buffer_send));
-    buffer_send[0]=1;
-    sprintf(buffer_send+1, "%d", ad);
-    if(isServer==0&&isuart==1)
+    if(isSending == 1)
     {
-        write(fd, buffer_send, strlen(buffer_send));
+        memset(buffer_send, 0, sizeof(buffer_send));
+        buffer_send[0]=1;
+        sprintf(buffer_send+1, "%d", ad);
+        if(isServer==0&&isuart==1)
+        {
+            write(fd, buffer_send, strlen(buffer_send));
 
+        }
+        if(isServer==1&&isuart==0)
+        {
+            tcpsocket->write(buffer_send,strlen(buffer_send));
+
+        }
     }
-    if(isServer==1&&isuart==0)
-    {
-        tcpsocket->write(buffer_send,strlen(buffer_send));
-
-    }
-
     adc_page->update_data(AD.r);
 
     //char *buf;

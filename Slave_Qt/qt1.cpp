@@ -103,15 +103,16 @@ void Qt1::fun_back()
 
 void Qt1::fun_refresh_pic()
 {
-   if(!myCamera->GetBuffer(frameBufYUV))
-   {
-       std::cout<< "Get Camera Buf error!\n";
-       return;
-   }
-   //TODO:process_image() function is now empty.
-   myCamera->process_image(frameBufYUV, frameBufRGB);
-   showCapPhoto();
-   main_window->SendRGB(frameBufRGB);
+    if(!myCamera->GetBuffer(frameBufYUV))
+    {
+        std::cout<< "Get Camera Buf error!\n";
+        return;
+    }
+    //TODO:process_image() function is now empty.
+    myCamera->process_image(frameBufYUV, frameBufRGB);
+    showCapPhoto();
+    if(main_window->isSending == 1)
+        main_window->SendRGB(frameBufRGB);
 }
 
 QString Qt1::fun_take_temp_photo()

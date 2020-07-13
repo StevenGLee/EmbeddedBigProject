@@ -12,8 +12,12 @@ namespace Master_WPF
     [Serializable]
     public class SequenceData: HotSpotDatas
     {
-        int maxCount;
-        int seqCount;
+        public int maxCount;
+        public int seqCount 
+        {
+            get;
+            private set;
+        }
         List<int> buffer;
         int maximum, minimum;
 

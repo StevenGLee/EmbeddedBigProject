@@ -35,6 +35,7 @@ public:
     int set_opt(int,int,int,char,int);
     int ad;
     int isAdcOpen;
+    int isSending;
 
 
     ad_reader AD;
@@ -87,7 +88,6 @@ private:
     QButtonGroup* CameraButtons;
     QButtonGroup* ADCButtons;
     Ui::MainWindow *ui;
-    int isSending;
     int isServer;
     int isuart;
     QTcpServer *tcpserver;

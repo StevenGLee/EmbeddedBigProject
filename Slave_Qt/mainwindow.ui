@@ -33,7 +33,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>151</width>
+      <width>152</width>
       <height>241</height>
      </rect>
     </property>
@@ -77,12 +77,16 @@
        <item>
         <widget class="QLabel" name="label_6">
          <property name="text">
-          <string>Freq/Hz:</string>
+          <string>Interv/hms</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="sb_adc_freq"/>
+        <widget class="QSpinBox" name="sb_adc_freq">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -240,12 +244,16 @@
        <item>
         <widget class="QLabel" name="label_4">
          <property name="text">
-          <string>Freq/Hz:</string>
+          <string>Inter/hms</string>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QSpinBox" name="sb_camera_freq"/>
+        <widget class="QSpinBox" name="sb_camera_freq">
+         <property name="minimum">
+          <number>1</number>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
