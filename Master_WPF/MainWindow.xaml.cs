@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -37,6 +38,9 @@ namespace Master_WPF
         string AdcString;
         int AdcData;
         SequenceData AdcDatas, Data2Show;
+        FileStream fs;
+        List<BitmapImage> ImageTool;
+        int cnt;
         enum LowerProtocol
         {
             UART, Ethernet
@@ -55,7 +59,16 @@ namespace Master_WPF
             buffer = new byte[1024 * 1024];
             ConnectionState = 0;
             AdcDatas = new SequenceData(20, 10000, 0);
-            ConsoleManager.Show();
+            //ConsoleManager.Show();
+            string path = @"./tmp/";
+            string filename = path + "tmp.jpg";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            ImageTool = new List<BitmapImage>();
         }
 
         private void StartTrans_Click(object sender, RoutedEventArgs e)
@@ -89,11 +102,14 @@ namespace Master_WPF
                 StartTrans.Content = "断开连接";
                 ConnectionState = 1;
                 upperProtocol = UpperProtocol.Customized;//暂时这么设置上
+                buffer = new byte[1024 * 1024];
+
             }
             else
             {
                 if (lowerProtocol == LowerProtocol.Ethernet)
                 {
+                    //client.Client.EndReceive(null);
                     client.Client.Send(Encoding.ASCII.GetBytes("exit"));
                     client.Close();
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 断开与下位机的Ethernet连接。\n";
@@ -101,6 +117,7 @@ namespace Master_WPF
                 }
                 if (lowerProtocol == LowerProtocol.UART)
                 {
+                    //serial.BaseStream.EndRead(new AsyncResult( ));
                     serial.Close();
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 断开与下位机的UART连接。\n";
                 }
@@ -182,17 +199,19 @@ namespace Master_WPF
         //    serial.DataReceived += OnDataRecieved;
 
         //}
-
+        string tmp;
         private void OnRecieve(IAsyncResult ar)
         {
-            Console.WriteLine("OnReceive Called");
-
-            Thread.Sleep(1000);
+            //Console.WriteLine("OnReceive Called");
+            int c = 0;
             //收到TCP消息或uart消息
             if (lowerProtocol == LowerProtocol.Ethernet)
                 length = client.Client.EndReceive(ar);
             else if (lowerProtocol == LowerProtocol.UART)
+            {
+                Thread.Sleep(100);
                 length = serial.BaseStream.EndRead(ar);
+            }
             else
                 throw new Exception("不知道该从哪里read了！");
             Dispatcher.Invoke(() =>
@@ -205,7 +224,7 @@ namespace Master_WPF
                 switch (buffer[0])
                 {
                     case 1://ADC传来的值
-                        int c = 0;
+                        c = 0;
                         for (int i = 0; i < 1024 * 1024; i++)
                         {
                             if (c > 1)
@@ -221,9 +240,9 @@ namespace Master_WPF
                             if (buffer[c] == 0)
                                 i++;
                         AdcString = Encoding.ASCII.GetString(buffer.Skip(1).ToArray());
-                        string tmp = "";
+                        tmp = "";
                         for (int i = 0; AdcString[i]!=0; i++)
-                            tmp+=AdcString[i];
+                            tmp += AdcString[i];
                         
                         if (tmp.Length == 0)
                             break;
@@ -238,27 +257,22 @@ namespace Master_WPF
                         });
                         break;
                     case 2://Camera数据
-                        if (length == 640 * 480 * 3 + 1)//接受不完整，便丢弃
+                        cnt++;
+                        string path = @".\tmp\";
+                        string filename = path + "tmp"+cnt+".jpg";
+
+                        fs.Close();
+                        fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                        fs.Write(buffer, 1, length - 1);
+
+                        //所有流类型都要关闭流，否则会出现内存泄露问题
+                        Dispatcher.Invoke(() =>
                         {
-                            CameraData = new WriteableBitmap(640, 480, 400, 400, PixelFormats.Rgb24, null);
-                            //unsafe
-                            {
-                                CameraData.Lock();
-                                Marshal.Copy(buffer.Skip(1).ToArray(), 0, CameraData.BackBuffer, 640 * 480 * 3); //请注意_wbBitmap的数据格式以及buffer大小，以免溢出和显示异常
-                                CameraData.AddDirtyRect(new Int32Rect(0, 0, 640, 480));
-                                CameraData.Unlock();
-                            }
-                            Dispatcher.Invoke(() =>
-                            {
-                                CameraImage.Source = CameraData;
-                                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到相机数据，已显示。\n";
-                            });
-                        }
-                        else
-                            Dispatcher.Invoke(() =>
-                            {
-                                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到不完整相机数据，已丢弃。\n";
-                            });
+                            fs.Close();
+                            //BitmapImage ImageSource =
+                            CameraImage.Source = new BitmapImage(new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + filename));
+                            LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到相机数据，已显示。\n";
+                        });
                         break;
                     default:
                         Dispatcher.Invoke(() =>
@@ -268,6 +282,7 @@ namespace Master_WPF
                         break;
                 }
             }
+            buffer = new byte[1024 * 1024];
             if (lowerProtocol == LowerProtocol.Ethernet)
                 client.Client.BeginReceive(buffer, 0, 1024 * 1024, SocketFlags.None, OnRecieve, null);
             else if (lowerProtocol == LowerProtocol.UART)

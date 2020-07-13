@@ -57,7 +57,8 @@ MainWindow::MainWindow(QWidget *parent) :
 
     isSending = 0;
     isServer=0;
-    isuart=0;
+    isuart=1;
+    isAdcOpen = 0;
     uart3 = "/dev/ttySAC3";
 
 }
@@ -73,12 +74,14 @@ MainWindow::~MainWindow()
 void MainWindow::on_rb_UART_clicked()
 {
     isuart=1;
+    isServer=0;
         //UART通信方式
 }
 
 void MainWindow::on_rb_Ethernet_clicked()
 {
-    isServer==1;
+    isServer=1;
+    isuart=0;
 
     //Ethernet通信方式
 }
@@ -95,18 +98,19 @@ void MainWindow::on_rb_mqtt_clicked()
 
 void MainWindow::on_rb_camera_stop_clicked()
 {
-
-    camera_page->isCapOpen=1;
-    camera_page->fun_cap_open();
-    //相机停止采集和发送数据
+    if(camera_page->isCapOpen == 1)
+        camera_page->fun_cap_open();
+        //相机停止采集和发送数据
 }
 
 void MainWindow::on_rb_camera_static_clicked()
 {
-    camera_page->t4.stop();
+    if(camera_page->isCapOpen == 0)
+        camera_page->fun_cap_open();
+    else
+        camera_page->t4.stop();
     camera_page->t4.start(1000);
-    camera_page->isCapOpen=0;
-    camera_page->fun_cap_open();
+
     //相机以固定速率采集和发送
 }
 
@@ -122,18 +126,21 @@ void MainWindow::on_rb_camera_dynamic_monitor_clicked()
 
 void MainWindow::on_rb_adc_stop_clicked()
 {
-    camera_page->t5.stop();
-    AD.close();
-    //ADC停止采集和发送数据
+    if(isAdcOpen == 1)
+    {
+        camera_page->t5.stop();
+        AD.close();
+        //ADC停止采集和发送数据
+    }
 }
 
 
 
 void MainWindow::on_rb_adc_static_clicked()
 {
-    AD.open();
+    if(isAdcOpen == 0)
+        AD.open();
     camera_page->t5.start(1000);
-
     main_window->SendADC();
     //ADC以固定速率采集和发送
 }
@@ -146,24 +153,22 @@ void MainWindow::on_rb_adc_dynamic_clicked()
 
 void MainWindow::on_sb_camera_freq_valueChanged(int camera_freq)
 {
-    camera_page->t4.stop();
-    camera_page->isCapOpen=0;
-    camera_page->change_time(camera_freq);
-    camera_page->fun_cap_open();
-
+    if(camera_page->isCapOpen == 1)
+    {
+        camera_page->t4.stop();
+        camera_page->t4.start(camera_freq);
+    }
     //camera_page->isCapOpen=0;
     //相机动态采集速率改变响应函数
 }
 
 void MainWindow::on_sb_adc_freq_valueChanged(int adc_freq)
 {
-
-    AD.open();
-    ad=AD.ad();
-    camera_page->t5.stop();
-    camera_page->t5.start(adc_freq);
-    main_window->SendADC();
-
+    if(isAdcOpen == 1)
+    {
+        camera_page->t5.stop();
+        camera_page->t5.start(adc_freq);
+    }
     //adc动态采集速率改变响应函数
 }
 
@@ -191,17 +196,11 @@ void MainWindow::on_pb_start_sending_clicked()
                 set_opt(fd, 115200, 8, 'N', 1);
             }
         }
-        else if(ui->rb_Ethernet->isChecked())
+        else if(isServer==1&&isuart==0)
         {
-            //这个地方一看就知道你写的不对。但是你自己改。
-            if(isServer==1&&isuart==0)
-            {
-                TcpServer();
-                run();
-            }
-
+            TcpServer();
+            run();
         }
-
     }
     else
     {
@@ -304,17 +303,34 @@ void MainWindow::dataReceived()
 
 void MainWindow::SendRGB(unsigned char *frameBufRGB)
 {
+    printf("calling sendRGB\n");
+
     memset(buffer_send, 0, sizeof(buffer_send));
+    printf("memset complete\n");
+
+    QString filepath = "./tmp_images/tmp.jpg"; //"/mnt/usb/images/";
+    camera_page -> m_image->save(filepath, "JPG", -1);
+    printf("save OK\n");
+
+    int fd = ::open(filepath.toStdString().c_str(), O_RDONLY, 0777);
+    printf("Open OK, fd = %d\n", fd);
+    int len = ::read(fd, buffer_send + 1, 1024*1024 - 1);
+    printf("Read OK, length = %d\n", len);
+    ::close(fd);
+    //remove(filepath.toStdString().c_str());
     buffer_send[0]=2;
     //const char* RGB = (const char*)(char*)frameBufRGB;
     //sprintf(buffer_send+1, "%s", *frameBufRGB);
-    memcpy(buffer_send+1,frameBufRGB,640*480*3);
+    //memcpy(buffer_send+1,frameBufRGB,640*480*3);
     //write(fd, buffer_send, 640*480*3+1);
     if(isServer==1&&isuart==0)
     {
-        tcpsocket->write(buffer_send,strlen(buffer_send));
+        tcpsocket->write(buffer_send,len+1);
+        printf("Socket Write OK\n");
 
     }
+    else if(isServer==0&&isuart==1)
+        write(fd, buffer_send, len+1);
 
 }
 

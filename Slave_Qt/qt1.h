@@ -62,6 +62,7 @@ public:
         void InitBox();
         QWidget* the_parent;
         void change_time(int);
+        QString fun_take_temp_photo();
 };
 
 

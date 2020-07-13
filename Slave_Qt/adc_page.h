@@ -14,6 +14,7 @@ class ADC_page : public QDialog
 public:
     explicit ADC_page(QWidget *parent = 0);
     ~ADC_page();
+    void update_data(int value);
 
 private slots:
     void on_pushButton_2_clicked();

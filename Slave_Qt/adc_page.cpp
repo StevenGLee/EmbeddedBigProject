@@ -13,7 +13,16 @@ ADC_page::ADC_page(QWidget *parent) :
     ui->setupUi(this);
     this->setWindowFlags(Qt::FramelessWindowHint);
     the_parent = parent;
+    ui->progressBar->setRange(0, 10000);
+    ui->progressBar->setTextVisible(false);
 }
+
+void ADC_page::update_data(int value)
+{
+    ui->lcdNumber->display(value);
+    ui->progressBar->setValue(value);
+}
+
 
 ADC_page::~ADC_page()
 {

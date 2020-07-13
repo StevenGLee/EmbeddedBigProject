@@ -34,7 +34,7 @@ public:
 
     int set_opt(int,int,int,char,int);
     int ad;
-
+    int isAdcOpen;
 
 
     ad_reader AD;
