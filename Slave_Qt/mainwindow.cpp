@@ -318,6 +318,17 @@ void MainWindow::on_pb_start_sending_clicked()
         ui -> pb_start_sending->setText("Stop Sending");
         if(isServer==0&&isuart==1)
         {
+            isuart=1;
+            if(isServer==0&&isuart==1)
+            {
+                fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
+                if (fd == -1)
+                {
+                    printf("open %s is failed", uart3);
+
+                }
+                set_opt(fd, 115200, 8, 'N', 1);
+            }
             fd = ::open(uart3, O_RDWR | O_NOCTTY | O_NDELAY);
             if (fd == -1)
                 printf("open %s is failed", uart3);
@@ -575,6 +586,26 @@ void MainWindow::SendADC()
     //char *buf;
     //sprintf(buf,"%d",AD.ad());
     //memcpy(buffer_send,buf,(strlen(buf) + 1));
+}
+
+void MainWindow::modbus()
+{
+    modbus_t *ctx = NULL;
+    ctx = modbus_new_rtu("/dev/ttyS1", 115200, 'N', 8, 1);
+    if (ctx == NULL)                //使用UART1,对应的设备描述符为ttyS1
+    {
+         fprintf(stderr, "Unable to allocate libmodbus contex\n");
+         //return -1;
+    }
+    modbus_set_slave(ctx,1);
+    if (modbus_connect(ctx) == -1) //等待连接设备
+    {
+        fprintf(stderr, "Connection failed:%s\n", modbus_strerror(errno));
+        //return -1;
+    }
+
+
+
 }
 
 
