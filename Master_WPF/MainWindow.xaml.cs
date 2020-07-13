@@ -7,6 +7,7 @@ using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Runtime.Remoting.Messaging;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -37,6 +38,9 @@ namespace Master_WPF
         string AdcString;
         int AdcData;
         SequenceData AdcDatas, Data2Show;
+        FileStream fs;
+        List<BitmapImage> ImageTool;
+        int cnt;
         enum LowerProtocol
         {
             UART, Ethernet
@@ -55,7 +59,16 @@ namespace Master_WPF
             buffer = new byte[1024 * 1024];
             ConnectionState = 0;
             AdcDatas = new SequenceData(20, 10000, 0);
-            ConsoleManager.Show();
+            //ConsoleManager.Show();
+            string path = @"./tmp/";
+            string filename = path + "tmp.jpg";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+            ImageTool = new List<BitmapImage>();
         }
 
         private void StartTrans_Click(object sender, RoutedEventArgs e)
@@ -71,16 +84,34 @@ namespace Master_WPF
                         return;
                     }
                     client = new TcpClient();
-                    client.Connect(IPAddress.Parse(IPTextBox.Text), 3230);
+                    try
+                    {
+                        client.Connect(IPAddress.Parse(IPTextBox.Text), 3230);
+                    }
+                    catch(Exception exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                        return;
+                    }
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 使用Ethernet连接下位机。\n";
+                    
                     client.Client.BeginReceive(buffer, 0, 1024 * 1024, SocketFlags.None, OnRecieve, null);
+                    client.Client.Send(new byte[] { 123 });
                     lowerProtocol = LowerProtocol.Ethernet;
                 }
                 if (UartRadioButton.IsChecked == true)
                 {
                     serial = new SerialPort(SerialPortComboBox.Text);
                     serial.BaudRate = 115200;
-                    serial.Open();
+                    try
+                    {
+                        serial.Open();
+                    }
+                    catch (Exception exception)
+                    {
+                        MessageBox.Show(exception.Message);
+                        return;
+                    }
                     serial.BaseStream.BeginRead(buffer, 0, 1024 * 1024, OnRecieve, null);
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 使用UART连接下位机。\n";
                     //serial.DataReceived += OnDataRecieved;
@@ -89,23 +120,41 @@ namespace Master_WPF
                 StartTrans.Content = "断开连接";
                 ConnectionState = 1;
                 upperProtocol = UpperProtocol.Customized;//暂时这么设置上
+                buffer = new byte[1024 * 1024];
+                CameraDynamicRadioButton.IsEnabled = true;
+                CameraStaticRadioButton.IsEnabled = true;
+                CameraStopRadioButton.IsEnabled = true;
+                CameraDynamicDetectionRadioButton.IsEnabled = false;//没开发出来
+                AdcStopRadioButton.IsEnabled = true;
+                AdcStaticRadioButton.IsEnabled = true;
+                AdcDynamicRadioButton.IsEnabled = true;
             }
             else
             {
                 if (lowerProtocol == LowerProtocol.Ethernet)
                 {
-                    client.Client.Send(Encoding.ASCII.GetBytes("exit"));
+                    //client.Client.EndReceive(null);
+                    client.Client.Send(new byte[] { 255,(byte)'e', (byte)'x', (byte)'i', (byte)'t' });
                     client.Close();
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 断开与下位机的Ethernet连接。\n";
 
                 }
                 if (lowerProtocol == LowerProtocol.UART)
                 {
+                    //serial.BaseStream.EndRead(new AsyncResult( ));
                     serial.Close();
                     LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 断开与下位机的UART连接。\n";
                 }
                 StartTrans.Content = "连接下位机";
                 ConnectionState = 0;
+                CameraDynamicRadioButton.IsEnabled = false;
+                CameraStaticRadioButton.IsEnabled = false;
+                CameraStopRadioButton.IsEnabled = false;
+                CameraDynamicDetectionRadioButton.IsEnabled = false;//没开发出来
+                AdcStopRadioButton.IsEnabled = false;
+                AdcStaticRadioButton.IsEnabled = false;
+                AdcDynamicRadioButton.IsEnabled = false;
+
             }
         }
 
@@ -182,17 +231,28 @@ namespace Master_WPF
         //    serial.DataReceived += OnDataRecieved;
 
         //}
-
+        string tmp;
         private void OnRecieve(IAsyncResult ar)
         {
-            Console.WriteLine("OnReceive Called");
-
-            Thread.Sleep(1000);
+            //Console.WriteLine("OnReceive Called");
+            int c = 0;
             //收到TCP消息或uart消息
             if (lowerProtocol == LowerProtocol.Ethernet)
-                length = client.Client.EndReceive(ar);
+                try
+                {
+                    length = client.Client.EndReceive(ar);
+                }
+                catch (Exception exception)
+                {
+                    MessageBox.Show(exception.Message);
+                    return;
+                }
+
             else if (lowerProtocol == LowerProtocol.UART)
+            {
+                Thread.Sleep(100);
                 length = serial.BaseStream.EndRead(ar);
+            }
             else
                 throw new Exception("不知道该从哪里read了！");
             Dispatcher.Invoke(() =>
@@ -204,13 +264,43 @@ namespace Master_WPF
             {
                 switch (buffer[0])
                 {
+                    case 255://控制信息，断开连接
+                        if (buffer[1] == 'e' && buffer[2] == 'x' && buffer[3] == 'i' && buffer[4] == 't')
+                        {
+                            if (lowerProtocol == LowerProtocol.Ethernet)
+                                try
+                                {
+                                    client.Client.Close();
+                                }
+                                catch (Exception exception)
+                                {
+                                    MessageBox.Show(exception.Message);
+                                    return;
+                                }
+                            Dispatcher.Invoke(() =>
+                            {
+                                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 断开与下位机的UART连接。\n";
+                                StartTrans.Content = "连接下位机";
+                                ConnectionState = 0;
+                                CameraDynamicRadioButton.IsEnabled = false;
+                                CameraStaticRadioButton.IsEnabled = false;
+                                CameraStopRadioButton.IsEnabled = false;
+                                CameraDynamicDetectionRadioButton.IsEnabled = false;//没开发出来
+                                AdcStopRadioButton.IsEnabled = false;
+                                AdcStaticRadioButton.IsEnabled = false;
+                                AdcDynamicRadioButton.IsEnabled = false;
+                            });
+                            return;
+                        }
+
+                        break;
                     case 1://ADC传来的值
-                        int c = 0;
+                        c = 0;
                         for (int i = 0; i < 1024 * 1024; i++)
                         {
                             if (c > 1)
                                 buffer[i] = 0;
-                            else if (buffer[i] == 1)
+                            else if (buffer[i] > '9' || buffer[i] < '0')
                             {
                                 buffer[i] = 0;
                                 c++;
@@ -221,16 +311,16 @@ namespace Master_WPF
                             if (buffer[c] == 0)
                                 i++;
                         AdcString = Encoding.ASCII.GetString(buffer.Skip(1).ToArray());
-                        string tmp = "";
+                        tmp = "";
                         for (int i = 0; AdcString[i]!=0; i++)
-                            tmp+=AdcString[i];
+                            tmp += AdcString[i];
                         
                         if (tmp.Length == 0)
                             break;
                         AdcData = Convert.ToInt32(tmp);
                         Dispatcher.Invoke(() =>
                         {
-                            ADCDataTextbox.Text = "ADC值：" + tmp;
+                            ADCDataTextbox.Text = tmp;
                             AdcDataBar.Value = AdcData;
                             AdcDatas.AddSequenceData(AdcData);
                             AdcGraph.HotspotDatas = AdcDatas;
@@ -238,27 +328,85 @@ namespace Master_WPF
                         });
                         break;
                     case 2://Camera数据
-                        if (length == 640 * 480 * 3 + 1)//接受不完整，便丢弃
+                        cnt++;
+                        string path = @".\tmp\";
+                        string filename = path + "tmp"+cnt+".jpg";
+
+                        fs.Close();
+                        fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
+                        fs.Write(buffer, 1, length - 1);
+
+                        //所有流类型都要关闭流，否则会出现内存泄露问题
+                        Dispatcher.Invoke(() =>
                         {
-                            CameraData = new WriteableBitmap(640, 480, 400, 400, PixelFormats.Rgb24, null);
-                            //unsafe
-                            {
-                                CameraData.Lock();
-                                Marshal.Copy(buffer.Skip(1).ToArray(), 0, CameraData.BackBuffer, 640 * 480 * 3); //请注意_wbBitmap的数据格式以及buffer大小，以免溢出和显示异常
-                                CameraData.AddDirtyRect(new Int32Rect(0, 0, 640, 480));
-                                CameraData.Unlock();
-                            }
-                            Dispatcher.Invoke(() =>
-                            {
-                                CameraImage.Source = CameraData;
-                                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到相机数据，已显示。\n";
-                            });
-                        }
-                        else
-                            Dispatcher.Invoke(() =>
-                            {
-                                LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到不完整相机数据，已丢弃。\n";
-                            });
+                            fs.Close();
+                            //BitmapImage ImageSource =
+                            CameraImage.Source = new BitmapImage(new Uri(System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + filename));
+                            LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到相机数据，已显示。\n";
+                        });
+                        break;
+                    case 3://控制信息，adc发送间隔
+                        int GraphBufferLength = (int)(20 * (10.0 / buffer[1]));
+                        GraphBufferLength = GraphBufferLength > 20 ? GraphBufferLength : 20;
+                        AdcDatas.maxCount = GraphBufferLength;
+                        Dispatcher.Invoke(() =>
+                        {
+                            AdcIntervalTextBox.Text = buffer[1].ToString();
+                        });
+                        break;
+                    case 4://控制信息，adc停止
+                        Dispatcher.Invoke(() =>
+                        {
+                            AdcStopRadioButton.IsChecked = true;
+                            SetAdcInterval.IsEnabled = false;
+                        });
+                        break;
+                    case 5://控制信息，adc固定间隔发送
+                        Dispatcher.Invoke(() =>
+                        {
+                            AdcStaticRadioButton.IsChecked = true;
+                            SetAdcInterval.IsEnabled = false;
+                        });
+                        break;
+                    case 6://控制信息，adc动态间隔发送
+                        Dispatcher.Invoke(() =>
+                        {
+                            AdcDynamicRadioButton.IsChecked = true;
+                            SetAdcInterval.IsEnabled = true;
+                        });
+                        break;
+                    case 7://控制信息，相机发送间隔
+                        Dispatcher.Invoke(() =>
+                        {
+                            CameraIntervalTextBox.Text = buffer[1].ToString();
+                        });
+                        break;
+                    case 8://控制信息，相机停止发送
+                        Dispatcher.Invoke(() =>
+                        {
+                            CameraStopRadioButton.IsChecked = true;
+                            SetCameraInterval.IsEnabled = false;
+                        });
+                        break;
+                    case 9://控制信息，相机固定间隔发送
+                        Dispatcher.Invoke(() =>
+                        {
+                            CameraStaticRadioButton.IsChecked = true;
+                            SetCameraInterval.IsEnabled = false;
+                        });
+                        break;
+                    case 10://控制信息，相机动态间隔发送
+                        Dispatcher.Invoke(() =>
+                        {
+                            CameraDynamicRadioButton.IsChecked = true;
+                            SetCameraInterval.IsEnabled = true;
+                        });
+                        break;
+                    case 11://
+                        break;
+                    case 12:
+                        break;
+                    case 13:
                         break;
                     default:
                         Dispatcher.Invoke(() =>
@@ -268,6 +416,7 @@ namespace Master_WPF
                         break;
                 }
             }
+            buffer = new byte[1024 * 1024];
             if (lowerProtocol == LowerProtocol.Ethernet)
                 client.Client.BeginReceive(buffer, 0, 1024 * 1024, SocketFlags.None, OnRecieve, null);
             else if (lowerProtocol == LowerProtocol.UART)
@@ -330,6 +479,94 @@ namespace Master_WPF
             }
 
             AdcDatas.SaveTo(strpath);
+        }
+
+        private void SetAdcInterval_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] buffer = new byte[2];
+            buffer[0] = 3;
+            buffer[1] = (byte)Convert.ToUInt32(AdcIntervalTextBox.Text);
+            client.Client.Send(buffer);
+        }
+
+        private void AdcStopRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] buffer = new byte[1];
+            buffer[0] = 4;
+            client.Client.Send(buffer);
+            SetAdcInterval.IsEnabled = false;
+        }
+
+        private void AdcStaticRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] buffer = new byte[1];
+            buffer[0] = 5;
+            client.Client.Send(buffer);
+            SetAdcInterval.IsEnabled = false;
+
+        }
+
+        private void AdcDynamicRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetAdcInterval.IsEnabled = true;
+            byte[] buffer = new byte[1];
+            buffer[0] = 6;
+            client.Client.Send(buffer);
+            buffer = new byte[2];
+            buffer[0] = 3;
+            buffer[1] = (byte)Convert.ToUInt32(AdcIntervalTextBox.Text);
+            client.Client.Send(buffer);
+
+        }
+
+        private void SetCameraInterval_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] buffer = new byte[2];
+            buffer[0] = 7;
+            buffer[1] = (byte)Convert.ToUInt32(AdcIntervalTextBox.Text);
+            client.Client.Send(buffer);
+ 
+
+        }
+
+        private void CameraStopRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] buffer = new byte[1];
+            buffer[0] = 8;
+            client.Client.Send(buffer);
+            SetCameraInterval.IsEnabled = false;
+
+        }
+
+        private void CameraStaticRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] buffer = new byte[1];
+            buffer[0] = 9;
+            client.Client.Send(buffer);
+            SetCameraInterval.IsEnabled = false;
+
+        }
+
+        private void CameraDynamicRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            SetCameraInterval.IsEnabled = true;
+            byte[] buffer = new byte[1];
+            buffer[0] = 10;
+            client.Client.Send(buffer);
+            buffer = new byte[2];
+            buffer[0] = 7;
+            buffer[1] = (byte)Convert.ToUInt32(AdcIntervalTextBox.Text);
+            client.Client.Send(buffer);
+
+        }
+
+        private void CameraDynamicDetectionRadioButton_Click(object sender, RoutedEventArgs e)
+        {
+            byte[] buffer = new byte[1];
+            buffer[0] = 11;
+            client.Client.Send(buffer);
+            SetCameraInterval.IsEnabled = false;
+
         }
 
         private void LoadADCGraph_Click(object sender, RoutedEventArgs e)

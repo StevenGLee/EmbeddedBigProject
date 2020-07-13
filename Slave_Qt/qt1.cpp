@@ -82,7 +82,7 @@ Qt1::Qt1(QWidget *parent):QDialog(parent)
         //connect(pb_open_cam, SIGNAL(clicked()), this,SLOT(fun_cap_open()));
         connect(comboBox, SIGNAL(currentIndexChanged(int)),this, SLOT(fun_show_image(int)));
         //connect(pb_exit,SIGNAL(clicked()),this,SLOT(fun_exit()));
-        connect(&t5, SIGNAL(timeout()), main_window, SLOT(SendADC(int)));
+        connect(&t5, SIGNAL(timeout()), main_window, SLOT(SendADC()));
 
 
         connect(pb_Back,SIGNAL(clicked()),this,SLOT(fun_back()));
@@ -103,16 +103,23 @@ void Qt1::fun_back()
 
 void Qt1::fun_refresh_pic()
 {
-   if(!myCamera->GetBuffer(frameBufYUV))
-   {
-       std::cout<< "Get Camera Buf error!\n";
-       return;
-   }
-   //TODO:process_image() function is now empty.
-   myCamera->process_image(frameBufYUV, frameBufRGB);
-   main_window->SendRGB(frameBufRGB);
-   showCapPhoto();
+    if(!myCamera->GetBuffer(frameBufYUV))
+    {
+        std::cout<< "Get Camera Buf error!\n";
+        return;
+    }
+    //TODO:process_image() function is now empty.
+    myCamera->process_image(frameBufYUV, frameBufRGB);
+    showCapPhoto();
+    if(main_window->isSending == 1)
+        main_window->SendRGB(frameBufRGB);
 }
+
+QString Qt1::fun_take_temp_photo()
+{
+
+}
+
 
 void Qt1::fun_exit()
 {
