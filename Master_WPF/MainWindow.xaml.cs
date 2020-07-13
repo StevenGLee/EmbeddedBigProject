@@ -33,14 +33,13 @@ namespace Master_WPF
         TcpClient client;
         int length;
         byte[] buffer;
-        WriteableBitmap CameraData;
         int ConnectionState;
         string AdcString;
         int AdcData;
         SequenceData AdcDatas, Data2Show;
         FileStream fs;
-        List<BitmapImage> ImageTool;
         int cnt;
+        AdcDataset adcDataset;
         enum LowerProtocol
         {
             UART, Ethernet
@@ -68,7 +67,8 @@ namespace Master_WPF
             }
 
             fs = new FileStream(filename, FileMode.Create, FileAccess.ReadWrite, FileShare.ReadWrite);
-            ImageTool = new List<BitmapImage>();
+            adcDataset = new AdcDataset();
+            
         }
 
         private void StartTrans_Click(object sender, RoutedEventArgs e)
@@ -325,6 +325,7 @@ namespace Master_WPF
                             AdcDatas.AddSequenceData(AdcData);
                             AdcGraph.HotspotDatas = AdcDatas;
                             LogTextBox.Text += "[" + DateTime.Now.ToString("HH:mm:ss", new System.Globalization.CultureInfo("zh-cn")) + "] 收到了ADC传来的数据：" + tmp + "。\n";
+                            adcDataset.Add(new AdcDatasetItem(DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss:ms", new System.Globalization.CultureInfo("zh-cn")), AdcData));
                         });
                         break;
                     case 2://Camera数据
@@ -427,7 +428,6 @@ namespace Master_WPF
         private void SaveCameraImage_Click(object sender, RoutedEventArgs e)
         {
             //CameraData.
-            SaveCameraImg(CameraData);
         }
 
         /// <summary>
@@ -566,6 +566,77 @@ namespace Master_WPF
             buffer[0] = 11;
             client.Client.Send(buffer);
             SetCameraInterval.IsEnabled = false;
+
+        }
+
+        private void SaveCameraGraph_Click(object sender, RoutedEventArgs e)
+        {
+            string sourcePath = @".\tmp\";
+            string sourceFilename = sourcePath + "tmp" + cnt + ".jpg";
+            string targetPath = @".\SavedImg\";//指定存储的路径
+            string targetFilename = targetPath + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss") + ".jpg";
+
+
+            if (File.Exists(sourceFilename))//必须判断要复制的文件是否存在
+            {
+                if (!Directory.Exists(targetPath))
+                {
+                    Directory.CreateDirectory(targetPath);
+                }
+                File.Copy(sourceFilename, targetFilename, true);//三个参数分别是源文件路径，存储路径，若存储路径有相同文件是否替换
+            }
+        }
+
+        private void ViewCameraData_Click(object sender, RoutedEventArgs e)
+        {
+            string strDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\SavedImg\";
+            if (!Directory.Exists(strDir))
+            {
+                Directory.CreateDirectory(strDir);
+            }
+
+            System.Diagnostics.Process.Start("explorer.exe", strDir);
+        }
+
+        private void ViewCurrentADCData_Click(object sender, RoutedEventArgs e)
+        {
+            ShowAdcDataset window = new ShowAdcDataset();
+            window.AdcDataset = adcDataset;
+            window.Show();
+        }
+
+        private void ViewOldADCData_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "ADS Binary File(*.ads)|*.ads";
+            openFileDialog.DefaultExt = ".ads"; // Default file extension
+            string strDir = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location) + @"\AdcDataset\";
+
+            if (!Directory.Exists(strDir))
+            {
+                Directory.CreateDirectory(strDir);
+            }
+
+            openFileDialog.InitialDirectory = strDir;
+            if (openFileDialog.ShowDialog() == true)//注意，此处一定要手动引入System.Window.Forms空间，否则你如果使用默认的DialogResult会发现没有OK属性
+            {
+                ShowAdcDataset window = new ShowAdcDataset();
+                window.AdcDataset = AdcDataset.ReadFrom(openFileDialog.FileName);
+                window.Show();
+
+            }
+        }
+
+    private void SaveCurrentADCData_Click(object sender, RoutedEventArgs e)
+        {
+            string strDir = @".\AdcDataset\";
+            string strpath = strDir + DateTime.Now.ToString("yyyy-MM-dd-hh-mm-ss") + ".ads";
+            if (!Directory.Exists(strDir))
+            {
+                Directory.CreateDirectory(strDir);
+            }
+
+            adcDataset.SaveTo(strpath);
 
         }
 

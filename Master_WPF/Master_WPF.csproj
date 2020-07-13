@@ -55,10 +55,14 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="AdcDataset.cs" />
     <Compile Include="ConsoleManager.cs" />
     <Compile Include="SequenceData.cs" />
     <Compile Include="ShowAdcData.xaml.cs">
       <DependentUpon>ShowAdcData.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="ShowAdcDataset.xaml.cs">
+      <DependentUpon>ShowAdcDataset.xaml</DependentUpon>
     </Compile>
     <Page Include="HotspotStrip.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -79,6 +83,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="ShowAdcData.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="ShowAdcDataset.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

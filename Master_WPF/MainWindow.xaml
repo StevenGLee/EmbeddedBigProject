@@ -103,8 +103,8 @@
                     <TextBlock Text="相机读取间隔" HorizontalAlignment="Center" VerticalAlignment="Center" Grid.Row="1" Margin="2"/>
                     <TextBox x:Name="CameraIntervalTextBox" HorizontalContentAlignment="Right" VerticalContentAlignment="Center"  Grid.Row="2" Margin="2" Text="1"/>
                     <Button x:Name="SetCameraInterval" Content="设置相机间隔" Grid.Row="3" Margin="2" IsEnabled="False" Click="SetCameraInterval_Click"/>
-                    <Button x:Name="SaveCameraGraph" Content="保存相机图像" Margin="2" Grid.Row="6" Click="SaveADCGraph_Click"/>
-                    <Button x:Name="ViewCameraData" Content="查看保存的图像" Margin="2" Grid.Row="6" Grid.Column="1" Click="SaveADCGraph_Click"/>
+                    <Button x:Name="SaveCameraGraph" Content="保存相机图像" Margin="2" Grid.Row="6" Click="SaveCameraGraph_Click"/>
+                    <Button x:Name="ViewCameraData" Content="查看保存的图像" Margin="2" Grid.Row="6" Grid.Column="1" Click="ViewCameraData_Click"/>
                     <RadioButton x:Name="CameraStaticRadioButton" Content="固定间隔1s" GroupName="CameraControl" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" IsEnabled="False" Click="CameraStaticRadioButton_Click"/>
                     <RadioButton x:Name="CameraStopRadioButton" Content="停止" GroupName="CameraControl" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" IsChecked="True" IsEnabled="False" Click="CameraStopRadioButton_Click"/>
                     <RadioButton x:Name="CameraDynamicRadioButton" Content="动态间隔" GroupName="CameraControl" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3" IsEnabled="False" Click="CameraDynamicRadioButton_Click"/>
@@ -135,7 +135,9 @@
                     <Button x:Name="SetAdcInterval" Content="设置ADC间隔" Grid.Row="5" Margin="2,1.667,2,0" IsEnabled="False" Height="21" VerticalAlignment="Top" Click="SetAdcInterval_Click"/>
                     <Button x:Name="SaveADCGraph" Content="保存ADC图表" Margin="2" Grid.Row="6" Click="SaveADCGraph_Click"/>
                     <Button x:Name="LoadADCGraph" Content="查看ADC图表" Margin="2" Grid.Row="7" Click="LoadADCGraph_Click"/>
-                    <Button x:Name="ViewADCData" Content="查看ADC数据" Margin="2" Grid.Row="6" Grid.Column="1" Click="SaveADCGraph_Click"/>
+                    <Button x:Name="ViewCurrentADCData" Content="查看ADC数据" Margin="2" Grid.Row="5" Grid.Column="1" Click="ViewCurrentADCData_Click"/>
+                    <Button x:Name="SaveCurrentADCData" Content="保存ADC数据" Margin="2" Grid.Row="6" Grid.Column="1" Click="SaveCurrentADCData_Click"/>
+                    <Button x:Name="ViewOldADCData" Content="读取ADC数据" Margin="2" Grid.Row="7" Grid.Column="1" Click="ViewOldADCData_Click"/>
                     <RadioButton x:Name="AdcStaticRadioButton" Content="固定间隔1s" GroupName="AdcControl" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="2" IsEnabled="False" Click="AdcStaticRadioButton_Click"/>
                     <RadioButton x:Name="AdcStopRadioButton" Content="停止" GroupName="AdcControl" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="1" IsChecked="True" IsEnabled="False" Click="AdcStopRadioButton_Click"/>
                     <RadioButton x:Name="AdcDynamicRadioButton" Content="动态间隔" GroupName="AdcControl" HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1" Grid.Row="3" IsEnabled="False" Click="AdcDynamicRadioButton_Click"/>

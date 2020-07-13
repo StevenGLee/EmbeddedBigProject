@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Master_WPF"
         mc:Ignorable="d"
-        Title="ShowAdcData" Height="300" Width="400">
+        Title="读取的ADC折线图" Height="300" Width="400">
     <Grid>
         <local:HotspotStrip x:Name="AdcGraph" BorderBrush="{DynamicResource {x:Static SystemColors.ActiveCaptionBrushKey}}"/>
     </Grid>

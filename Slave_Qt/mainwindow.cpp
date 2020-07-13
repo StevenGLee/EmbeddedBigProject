@@ -477,7 +477,7 @@ void MainWindow::dataReceived()
             break;
         case 7://控制信息，相机发送间隔
             ui->sb_camera_freq->setValue(buffer[1]);
-            if(isAdcOpen == 1)
+            if(camera_page->isCapOpen == 1)
             {
                 camera_page->t4.stop();
                 camera_page->t4.start(buffer[1]*100);
