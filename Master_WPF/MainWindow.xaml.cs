@@ -544,7 +544,6 @@ namespace Master_WPF
             buffer[0] = 9;
             client.Client.Send(buffer);
             SetCameraInterval.IsEnabled = false;
-
         }
 
         private void CameraDynamicRadioButton_Click(object sender, RoutedEventArgs e)

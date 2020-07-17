@@ -36,6 +36,7 @@ public:
     int ad;
     int isAdcOpen;
     int isSending;
+    int isListening;
 
 
     ad_reader AD;

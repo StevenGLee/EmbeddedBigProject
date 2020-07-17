@@ -297,7 +297,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>TextLabel</string>
+    <string>Connection: Offline</string>
    </property>
    <property name="alignment">
     <set>Qt::AlignCenter</set>

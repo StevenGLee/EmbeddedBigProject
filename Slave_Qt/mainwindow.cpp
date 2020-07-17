@@ -54,7 +54,7 @@ MainWindow::MainWindow(QWidget *parent) :
     ADCButtons->addButton(ui->rb_adc_static);
     ADCButtons->addButton(ui->rb_adc_dynamic);
     ui->rb_adc_stop->setChecked(true);
-
+    isListening = 0;
     isSending = 0;
     isServer=0;
     isuart=1;
@@ -334,11 +334,29 @@ void MainWindow::on_pb_start_sending_clicked()
                 printf("open %s is failed", uart3);
             set_opt(fd, 115200, 8, 'N', 1);
             isSending = 1;
+            ui->lb_title->setText("Connection: UART Opened");
+
         }
         else if(isServer==1&&isuart==0)
         {
-            TcpServer();
-            run();
+            if(isListening == 0)
+            {
+                TcpServer();
+                run();
+                ui->lb_title->setText("Connection: Listsning. IP: 192.168.3.101 Port: 3230");
+                isListening = 1;
+            }
+            else
+            {
+                tcpserver->close();
+                ui->lb_title->setText("Connection: Offline");
+                ui -> rb_UART -> setEnabled(true);
+                ui -> rb_Ethernet -> setEnabled(true);
+                //ui -> rb_modbus -> setEnabled(true);
+                //ui -> rb_mqtt -> setEnabled(true);
+                isListening = 0;
+            }
+
         }
     }
     else
@@ -358,11 +376,19 @@ void MainWindow::on_pb_start_sending_clicked()
         else if(ui->rb_Ethernet->isChecked())
         {
             char tmpbuf[5] = {255, 'e','x','i','t'};
-            tcpsocket->write(tmpbuf,5);
+            if(tcpsocket != 0)
+            {
+                tcpsocket->write(tmpbuf,5);
+                tcpsocket->close();
+                tcpsocket = 0;
+            }
             tcpserver->close();
+            isListening=0;
             //点击“停止发送”，关闭连接，并关闭server
             //关闭连接前先发送“exit”这个字符串，通知上位机关闭连接
         }
+        ui->lb_title->setText("Connection: Offline");
+
 
     }
 }
@@ -421,6 +447,8 @@ void MainWindow::newConnectionSlot()
      connect(tcpsocket, SIGNAL(readyRead()),this, SLOT(dataReceived()));
      connect(tcpsocket, SIGNAL(disconnected()), tcpsocket, SLOT(deleteLater()));
      tcpsocket -> write("hello",6);
+     ui->lb_title->setText("Connection: Ethernet Connected");
+
 }
 
 
@@ -435,15 +463,18 @@ void MainWindow::dataReceived()
         switch(buffer[0])
         {
         case 255://控制信息，断开连接
-            if(buffer[1] == '1' && buffer[2] == 'x' && buffer[3] == 'i' && buffer[4] == 't')
+            if(buffer[1] == 'e' && buffer[2] == 'x' && buffer[3] == 'i' && buffer[4] == 't')
             {
                 tcpsocket->close();
+
+                tcpsocket = 0;
                 ui -> rb_UART -> setEnabled(true);
                 ui -> rb_Ethernet -> setEnabled(true);
                 //ui -> rb_modbus -> setEnabled(true);
                 //ui -> rb_mqtt -> setEnabled(true);
                 isSending = 0;
                 ui -> pb_start_sending->setText("Start Sending");
+                ui->lb_title->setText("Connection: Offline");
             }
             break;
         case 3://控制信息，adc发送间隔
@@ -588,25 +619,22 @@ void MainWindow::SendADC()
     //memcpy(buffer_send,buf,(strlen(buf) + 1));
 }
 
-void MainWindow::modbus()
-{
-    modbus_t *ctx = NULL;
-    ctx = modbus_new_rtu("/dev/ttyS1", 115200, 'N', 8, 1);
-    if (ctx == NULL)                //使用UART1,对应的设备描述符为ttyS1
-    {
-         fprintf(stderr, "Unable to allocate libmodbus contex\n");
-         //return -1;
-    }
-    modbus_set_slave(ctx,1);
-    if (modbus_connect(ctx) == -1) //等待连接设备
-    {
-        fprintf(stderr, "Connection failed:%s\n", modbus_strerror(errno));
-        //return -1;
-    }
-
-
-
-}
+//void MainWindow::modbus()
+//{
+//    modbus_t *ctx = NULL;
+//    ctx = modbus_new_rtu("/dev/ttyS1", 115200, 'N', 8, 1);
+//    if (ctx == NULL)                //使用UART1,对应的设备描述符为ttyS1
+//    {
+//         fprintf(stderr, "Unable to allocate libmodbus contex\n");
+//         //return -1;
+//    }
+//    modbus_set_slave(ctx,1);
+//    if (modbus_connect(ctx) == -1) //等待连接设备
+//    {
+//        fprintf(stderr, "Connection failed:%s\n", modbus_strerror(errno));
+//        //return -1;
+//    }
+//}
 
 
 

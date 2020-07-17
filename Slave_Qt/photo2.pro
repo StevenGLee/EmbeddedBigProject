@@ -13,7 +13,8 @@ HEADERS += dlinklist.h \
     mainwindow.h \
     adc_page.h \
     qt1.h\
-    ad_reader.h
+    ad_reader.h \
+    GraphItem.h
 
 FORMS += \
     mainwindow.ui \
@@ -25,4 +26,5 @@ SOURCES += main.cpp \
     mainwindow.cpp \
     adc_page.cpp \
     qt1.cpp \
-    ad_reader.cpp
+    ad_reader.cpp \
+    GraphItem.cpp
